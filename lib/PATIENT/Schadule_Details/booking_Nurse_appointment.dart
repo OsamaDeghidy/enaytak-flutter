@@ -1,8 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_sanar_proj/PATIENT/Widgets/Constant_Widgets/custom_bottomNAVbar.dart';
-import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ScheduleNurseScreen extends StatefulWidget {
@@ -217,7 +218,7 @@ class _ScheduleNurseScreenState extends State<ScheduleNurseScreen> {
           );
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => MainScreen()),
+            MaterialPageRoute(builder: (context) => const MainScreen()),
           );
         } else {
           final responseBody = json.decode(response.body);
@@ -227,7 +228,7 @@ class _ScheduleNurseScreenState extends State<ScheduleNurseScreen> {
               'Another user booked this appointment. Please select another time.';
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('$errorMessage'),
+              content: Text(errorMessage),
               backgroundColor: Colors.red,
             ),
           );

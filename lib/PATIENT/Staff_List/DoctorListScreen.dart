@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_sanar_proj/PATIENT/StaffDetails/doctor_details.dart';
 import 'package:http/http.dart' as http;
@@ -229,7 +230,7 @@ class _DoctorListScreenState extends State<DoctorListScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  CircleAvatar(
+                  const CircleAvatar(
                     radius: 40,
                     backgroundColor: Colors.white,
                   ),
