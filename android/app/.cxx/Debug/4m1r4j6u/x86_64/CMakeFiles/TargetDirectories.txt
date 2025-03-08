@@ -1,0 +1,2 @@
+D:/FreeLance_Enaytak_proj/Enytac/android/app/.cxx/Debug/4m1r4j6u/x86_64/CMakeFiles/edit_cache.dir
+D:/FreeLance_Enaytak_proj/Enytac/android/app/.cxx/Debug/4m1r4j6u/x86_64/CMakeFiles/rebuild_cache.dir
