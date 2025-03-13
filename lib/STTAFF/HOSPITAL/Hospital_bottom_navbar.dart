@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_sanar_proj/PATIENT/Screens/HomeScreen.dart';
-import 'package:flutter_sanar_proj/PATIENT/Screens/MedicalDiagnosisPage.dart';
 import 'package:flutter_sanar_proj/PATIENT/Screens/SettingPage.dart';
+import 'package:flutter_sanar_proj/PATIENT/Screens/medical_diagnosis_page.dart';
 import 'package:flutter_sanar_proj/STTAFF/HOSPITAL/appointment_screen.dart';
 
 class HospitalMainScreen extends StatefulWidget {
@@ -16,7 +16,7 @@ class _HospitalMainScreenState extends State<HospitalMainScreen> {
 
   // List of screens to navigate between
   final List<Widget> _pages = [
-    HomePage(),
+    const HomePage(),
 /*     const SchedulePage(),
  */
     const AppointmentPage(),

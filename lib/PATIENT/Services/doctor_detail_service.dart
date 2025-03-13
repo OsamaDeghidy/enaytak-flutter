@@ -1,13 +1,16 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_sanar_proj/PATIENT/Services/booking_Doctor_service_appointment.dart';
+import 'package:flutter_sanar_proj/constant.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class DoctorDetailsServiceScreen extends StatelessWidget {
   final Map<String, dynamic> doctor;
-
-  const DoctorDetailsServiceScreen({super.key, required this.doctor});
+  final String servicePrice;
+  const DoctorDetailsServiceScreen(
+      {super.key, required this.doctor, required this.servicePrice});
 
   Future<Map<String, dynamic>> fetchDoctorDetails(int doctorId) async {
     final response = await http.get(
@@ -42,6 +45,7 @@ class DoctorDetailsServiceScreen extends StatelessWidget {
     int doctorId = doctor['id'];
 
     return Scaffold(
+      backgroundColor: Colors.teal.shade50,
       appBar: AppBar(
         title: Text(doctor['name'] ?? 'Doctor Details'),
         backgroundColor: Colors.white,
@@ -114,16 +118,9 @@ class DoctorDetailsServiceScreen extends StatelessWidget {
                                         rating: doctorDetails['average_rating']
                                             .toString()),
                                     const SizedBox(width: 16),
-                                    Row(
-                                      children: [
-                                        const Icon(Icons.attach_money,
-                                            color: Colors.green),
-                                        const SizedBox(width: 4),
-                                        Text(
-                                          'Fee: ${doctor['fee']} SAR',
-                                          style: const TextStyle(fontSize: 16),
-                                        ),
-                                      ],
+                                    Text(
+                                      'Fee: ${doctor['fee'] ?? 0} ${Constant.currency}',
+                                      style: const TextStyle(fontSize: 16),
                                     ),
                                   ],
                                 ),
@@ -152,76 +149,80 @@ class DoctorDetailsServiceScreen extends StatelessWidget {
                           "Services", doctorDetails['services']?.join(', ')),
 
                       // Buttons Section
-                      Container(
-                        padding: const EdgeInsets.all(16),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            // Favorite Icon Button
-                            IconButton(
-                              icon: const Icon(Icons.favorite_border,
-                                  color: Colors.redAccent),
+                      const SizedBox(
+                        height: 24,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          // Favorite Icon Button
+                          // IconButton(
+                          //   icon: const Icon(Icons.favorite_border,
+                          //       color: Colors.redAccent),
+                          //   onPressed: () {
+                          //     // Handle favorite action
+                          //   },
+                          // ),
+                          // Book Video Appointment Button
+                          Expanded(
+                            child: ElevatedButton.icon(
+                              style: ElevatedButton.styleFrom(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 12),
+                                backgroundColor: Colors.blueAccent,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8)),
+                              ),
+                              icon: const Icon(Icons.video_call,
+                                  color: Colors.white),
+                              label: const FittedBox(
+                                child: Text("Book Video\nAppointment",
+                                    style: TextStyle(
+                                        fontSize: 14, color: Colors.white)),
+                              ),
                               onPressed: () {
-                                // Handle favorite action
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          BookingDoctorServiceAppointment(
+                                            servicePrice: servicePrice,
+                                          )),
+                                );
                               },
                             ),
-                            // Book Video Appointment Button
-                            Expanded(
-                              child: ElevatedButton.icon(
-                                style: ElevatedButton.styleFrom(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 12),
-                                  backgroundColor: Colors.blueAccent,
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8)),
-                                ),
-                                icon: const Icon(Icons.video_call,
-                                    color: Colors.white),
-                                label: const FittedBox(
-                                  child: Text("Book Video\nAppointment",
-                                      style: TextStyle(
-                                          fontSize: 14, color: Colors.white)),
-                                ),
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            const booking_Doctor_service_appointment()),
-                                  );
-                                },
+                          ),
+                          const SizedBox(width: 8),
+                          // Book Appointment Button
+                          Expanded(
+                            child: ElevatedButton.icon(
+                              style: ElevatedButton.styleFrom(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 12),
+                                backgroundColor: Colors.green,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8)),
                               ),
-                            ),
-                            const SizedBox(width: 8),
-                            // Book Appointment Button
-                            Expanded(
-                              child: ElevatedButton.icon(
-                                style: ElevatedButton.styleFrom(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 12),
-                                  backgroundColor: Colors.green,
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8)),
-                                ),
-                                icon: const Icon(Icons.person,
-                                    color: Colors.white),
-                                label: const FittedBox(
-                                  child: Text("Book\nAppointment",
-                                      style: TextStyle(
-                                          fontSize: 14, color: Colors.white)),
-                                ),
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            const booking_Doctor_service_appointment()),
-                                  );
-                                },
+                              icon:
+                                  const Icon(Icons.person, color: Colors.white),
+                              label: const FittedBox(
+                                child: Text("Book\nAppointment",
+                                    style: TextStyle(
+                                        fontSize: 14, color: Colors.white)),
                               ),
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          BookingDoctorServiceAppointment(
+                                            servicePrice: servicePrice,
+                                          )),
+                                );
+                              },
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -240,14 +241,14 @@ class DoctorDetailsServiceScreen extends StatelessWidget {
     }
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Column(
+      child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             title,
             style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
-          const SizedBox(height: 4),
+          const Spacer(),
           Text(
             value.toString(),
             style: const TextStyle(fontSize: 16, color: Colors.grey),

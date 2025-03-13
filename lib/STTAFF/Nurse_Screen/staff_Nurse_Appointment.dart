@@ -1,9 +1,10 @@
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_sanar_proj/PATIENT/Widgets/Constant_Widgets/custom_AppBar.dart';
 import 'package:flutter_sanar_proj/STTAFF/Nurse_Screen/addNurse_diagnosis.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_sanar_proj/PATIENT/Widgets/Constant_Widgets/custom_AppBar.dart';
 
 class Staff_Nurse_AppointmentScreen extends StatefulWidget {
   const Staff_Nurse_AppointmentScreen({super.key});
@@ -277,8 +278,8 @@ class _TabbedListState extends State<TabbedList>
       children: [
         Container(
           decoration: BoxDecoration(
-            color: Colors.teal[400],
-            borderRadius: BorderRadius.circular(12),
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(50),
           ),
           child: TabBar(
             controller: _tabController,
@@ -289,13 +290,17 @@ class _TabbedListState extends State<TabbedList>
                 const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             indicator: BoxDecoration(
               color: Colors.teal[600],
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(50),
             ),
             tabs: widget.tabs
                 .map((tab) => Tab(
                       text: tab.title,
                     ))
                 .toList(),
+            indicatorSize: TabBarIndicatorSize.tab,
+            padding: EdgeInsets.zero,
+            indicatorPadding: EdgeInsets.zero,
+            dividerColor: Colors.transparent,
           ),
         ),
         Expanded(

@@ -1,8 +1,9 @@
-import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:flutter_sanar_proj/PATIENT/Schadule_Details/booking_Doctor_appointment.dart';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_sanar_proj/constant.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class DoctorDetailsScreen extends StatelessWidget {
   final Map<String, dynamic> doctor;
@@ -86,63 +87,57 @@ class DoctorDetailsScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           // Profile Image and Info Section
-                          Row(
+                          Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               // Profile Image
                               Container(
-                                height: 100,
-                                width: 100,
+                                height: 200,
+                                width: double.infinity,
                                 decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(8),
-                                  image: DecorationImage(
-                                    image: NetworkImage(doctor['photo'] ?? ""),
+                                  borderRadius: BorderRadius.circular(24),
+                                ),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(24),
+                                  child: Image.network(
+                                    doctor['photo'] ?? "",
+                                    fit: BoxFit.cover,
                                   ),
                                 ),
                               ),
-                              const SizedBox(width: 16),
+                              const SizedBox(height: 16),
                               // Name and Details
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      doctor['name'],
-                                      style: const TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                    const SizedBox(height: 8),
-                                    Text(
-                                      doctor['specialization'] ??
-                                          'No specialization available',
-                                      style: const TextStyle(
-                                          fontSize: 16, color: Colors.grey),
-                                    ),
-                                    const SizedBox(height: 12),
-                                    Row(
-                                      children: [
-                                        RatingBox(
-                                            rating:
-                                                doctorDetails['average_rating']
-                                                    .toString()),
-                                        const SizedBox(width: 16),
-                                        Row(
-                                          children: [
-                                            const Icon(Icons.attach_money,
-                                                color: Colors.green),
-                                            const SizedBox(width: 4),
-                                            Text(
-                                              'Fee: ${doctor['fee']} SAR',
-                                              style:
-                                                  const TextStyle(fontSize: 16),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    doctor['name'],
+                                    style: const TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  const Spacer(),
+                                  Text(
+                                    doctor['specialization'] ??
+                                        'No specialization available',
+                                    style: const TextStyle(
+                                        fontSize: 16, color: Colors.grey),
+                                  ),
+                                  const SizedBox(height: 12),
+                                  Row(
+                                    children: [
+                                      RatingBox(
+                                          rating:
+                                              doctorDetails['average_rating']
+                                                  .toString()),
+                                      const SizedBox(width: 16),
+                                      Text(
+                                        'Fee: ${doctor['fee'] ?? 0} ${Constant.currency}',
+                                        style: const TextStyle(fontSize: 16),
+                                      ),
+                                    ],
+                                  ),
+                                ],
                               ),
                             ],
                           ),
@@ -152,7 +147,7 @@ class DoctorDetailsScreen extends StatelessWidget {
                           _buildSection("Certifications",
                               doctorDetails['certifications']),
                           _buildSection("Years of Experience",
-                              doctorDetails['years_of_experience']?.toString()),
+                              '${doctorDetails['years_of_experience'] ?? 0} Years'),
                           _buildSection("City", doctorDetails['city']),
                           _buildSection("Region", doctorDetails['region']),
                           _buildSection("Degree", doctorDetails['degree']),
@@ -186,83 +181,83 @@ class DoctorDetailsScreen extends StatelessWidget {
                           //     ],
                           //   ),
                           // ),
-
+                          //TODO in DOctor screen add button to go to the doctor profile
                           // Buttons Section
-                          Container(
-                            padding: const EdgeInsets.all(16),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: [
-                                // Favorite Icon Button
-                                IconButton(
-                                  icon: const Icon(Icons.favorite_border,
-                                      color: Colors.redAccent),
-                                  onPressed: () {
-                                    // Handle favorite action
-                                  },
-                                ),
-                                // Book Video Appointment Button
-                                Expanded(
-                                  child: ElevatedButton.icon(
-                                    style: ElevatedButton.styleFrom(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 12),
-                                      backgroundColor: Colors.blueAccent,
-                                      shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(8)),
-                                    ),
-                                    icon: const Icon(Icons.video_call,
-                                        color: Colors.white),
-                                    label: const FittedBox(
-                                      child: Text("Book Video\nAppointment",
-                                          style: TextStyle(
-                                              fontSize: 14,
-                                              color: Colors.white)),
-                                    ),
-                                    onPressed: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                const ScheduleScreen()),
-                                      );
-                                    },
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                                // Book Appointment Button
-                                Expanded(
-                                  child: ElevatedButton.icon(
-                                    style: ElevatedButton.styleFrom(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 12),
-                                      backgroundColor: Colors.green,
-                                      shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(8)),
-                                    ),
-                                    icon: const Icon(Icons.person,
-                                        color: Colors.white),
-                                    label: const FittedBox(
-                                      child: Text("Book\nAppointment",
-                                          style: TextStyle(
-                                              fontSize: 14,
-                                              color: Colors.white)),
-                                    ),
-                                    onPressed: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                const ScheduleScreen()),
-                                      );
-                                    },
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
+                          // Container(
+                          //   padding: const EdgeInsets.all(16),
+                          //   child: Row(
+                          //     mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          //     children: [
+                          //       // Favorite Icon Button
+                          //       IconButton(
+                          //         icon: const Icon(Icons.favorite_border,
+                          //             color: Colors.redAccent),
+                          //         onPressed: () {
+                          //           // Handle favorite action
+                          //         },
+                          //       ),
+                          //       // Book Video Appointment Button
+                          //       Expanded(
+                          //         child: ElevatedButton.icon(
+                          //           style: ElevatedButton.styleFrom(
+                          //             padding: const EdgeInsets.symmetric(
+                          //                 vertical: 12),
+                          //             backgroundColor: Colors.blueAccent,
+                          //             shape: RoundedRectangleBorder(
+                          //                 borderRadius:
+                          //                     BorderRadius.circular(8)),
+                          //           ),
+                          //           icon: const Icon(Icons.video_call,
+                          //               color: Colors.white),
+                          //           label: const FittedBox(
+                          //             child: Text("Book Video\nAppointment",
+                          //                 style: TextStyle(
+                          //                     fontSize: 14,
+                          //                     color: Colors.white)),
+                          //           ),
+                          //           onPressed: () {
+                          //             Navigator.push(
+                          //               context,
+                          //               MaterialPageRoute(
+                          //                   builder: (context) =>
+                          //                       const ScheduleScreen()),
+                          //             );
+                          //           },
+                          //         ),
+                          //       ),
+                          //       const SizedBox(width: 8),
+                          //       // Book Appointment Button
+                          //       // Expanded(
+                          //       //   child: ElevatedButton.icon(
+                          //       //     style: ElevatedButton.styleFrom(
+                          //       //       padding: const EdgeInsets.symmetric(
+                          //       //           vertical: 12),
+                          //       //       backgroundColor: Colors.green,
+                          //       //       shape: RoundedRectangleBorder(
+                          //       //           borderRadius:
+                          //       //               BorderRadius.circular(8)),
+                          //       //     ),
+                          //       //     icon: const Icon(Icons.person,
+                          //       //         color: Colors.white),
+                          //       //     label: const FittedBox(
+                          //       //       child: Text("Book\nAppointment",
+                          //       //           style: TextStyle(
+                          //       //               fontSize: 14,
+                          //       //               color: Colors.white)),
+                          //       //     ),
+                          //       //     onPressed: () {
+                          //       //       Navigator.push(
+                          //       //         context,
+                          //       //         MaterialPageRoute(
+                          //       //             builder: (context) =>
+                          //       //                 const ScheduleScreen()),
+                          //       //       );
+                          //       //     },
+                          //       //   ),
+                          //       // ),
+                          //     ],
+                          //   ),
+                          // ),
                         ],
                       ),
                     ),
@@ -288,7 +283,7 @@ class RatingBox extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: Colors.orange,
+        color: Colors.amber,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Text(
@@ -306,14 +301,14 @@ Widget _buildSection(String title, dynamic value) {
   }
   return Padding(
     padding: const EdgeInsets.symmetric(vertical: 8.0),
-    child: Column(
+    child: Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           title,
           style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
-        const SizedBox(height: 4),
+        const Spacer(),
         Text(
           value.toString(),
           style: const TextStyle(fontSize: 16, color: Colors.grey),

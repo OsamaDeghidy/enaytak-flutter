@@ -1,14 +1,16 @@
-import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'dart:convert';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_sanar_proj/constant.dart';
+import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+
 import 'FilteredListScreen.dart'; // Import the FilteredListScreen
 
 class ServiceDetailScreen extends StatelessWidget {
   final int serviceId; // Service ID to fetch details
 
-  const ServiceDetailScreen({Key? key, required this.serviceId})
-      : super(key: key);
+  const ServiceDetailScreen({super.key, required this.serviceId});
 
   Future<Map<String, dynamic>> fetchServiceDetails() async {
     final url = Uri.parse(
@@ -45,7 +47,7 @@ class ServiceDetailScreen extends StatelessWidget {
                   end: Alignment.bottomCenter,
                 ),
               ),
-              child: Center(child: CircularProgressIndicator()),
+              child: const Center(child: CircularProgressIndicator()),
             ),
           );
         } else if (snapshot.hasError) {
@@ -106,7 +108,7 @@ class ServiceDetailScreen extends StatelessWidget {
                             BoxShadow(
                               color: Colors.teal.withOpacity(0.2),
                               blurRadius: 10,
-                              offset: Offset(0, 5),
+                              offset: const Offset(0, 5),
                             ),
                           ],
                         ),
@@ -121,7 +123,7 @@ class ServiceDetailScreen extends StatelessWidget {
                           ),
                         ),
                       ),
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
 
                       // Service Name with Divider
                       Text(
@@ -139,27 +141,21 @@ class ServiceDetailScreen extends StatelessWidget {
                         thickness: 1,
                         height: 20,
                       ),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
 
                       // Price and Duration in a Row
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           // Price
-                          Row(
-                            children: [
-                              Icon(Icons.attach_money,
-                                  size: 28, color: Colors.teal.shade800),
-                              SizedBox(width: 5),
-                              Text(
-                                "\$${price.toStringAsFixed(2)}",
-                                style: TextStyle(
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.teal.shade700,
-                                ),
-                              ),
-                            ],
+
+                          Text(
+                            "${price.toStringAsFixed(2)} ${Constant.currency}",
+                            style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.teal.shade700,
+                            ),
                           ),
 
                           // Duration
@@ -167,7 +163,7 @@ class ServiceDetailScreen extends StatelessWidget {
                             children: [
                               Icon(Icons.timer,
                                   size: 28, color: Colors.teal.shade800),
-                              SizedBox(width: 5),
+                              const SizedBox(width: 5),
                               Text(
                                 "${serviceDetails['duration'] ?? 'N/A'} mins",
                                 style: TextStyle(
@@ -180,7 +176,7 @@ class ServiceDetailScreen extends StatelessWidget {
                           ),
                         ],
                       ),
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
 
                       // Description Section
                       Text(
@@ -191,7 +187,7 @@ class ServiceDetailScreen extends StatelessWidget {
                           color: Colors.teal.shade900,
                         ),
                       ),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       Text(
                         serviceDetails['description_ar'] ??
                             serviceDetails['description'] ??
@@ -204,7 +200,7 @@ class ServiceDetailScreen extends StatelessWidget {
                         textDirection: TextDirection
                             .rtl, // Set text direction to RTL for Arabic
                       ),
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
 
                       // Book Service Button
                       Center(
@@ -213,21 +209,23 @@ class ServiceDetailScreen extends StatelessWidget {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) =>
-                                    FilteredListScreen(serviceId: serviceId),
+                                builder: (context) => FilteredListScreen(
+                                  serviceId: serviceId,
+                                  servicePrice: price.toStringAsFixed(2),
+                                ),
                               ),
                             );
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.teal,
-                            padding: EdgeInsets.symmetric(
+                            padding: const EdgeInsets.symmetric(
                                 vertical: 16, horizontal: 32),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
                             elevation: 5,
                           ),
-                          child: Text(
+                          child: const Text(
                             'Book Service',
                             style: TextStyle(fontSize: 18, color: Colors.white),
                           ),

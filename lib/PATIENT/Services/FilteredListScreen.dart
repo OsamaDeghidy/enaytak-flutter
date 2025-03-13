@@ -1,15 +1,16 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_sanar_proj/STTAFF/HOSPITAL/ProviderDetailsScreen.dart';
-import 'package:http/http.dart' as http;
 import 'dart:convert';
+
+import 'package:flutter/material.dart';
 import 'package:flutter_sanar_proj/PATIENT/Services/doctor_detail_service.dart';
 import 'package:flutter_sanar_proj/PATIENT/Services/nurse_detail_service.dart';
+import 'package:flutter_sanar_proj/STTAFF/HOSPITAL/ProviderDetailsScreen.dart';
+import 'package:http/http.dart' as http;
 
 class FilteredListScreen extends StatefulWidget {
   final int serviceId; // Pass the service ID to this screen
-
-  const FilteredListScreen({Key? key, required this.serviceId})
-      : super(key: key);
+  final String servicePrice;
+  const FilteredListScreen(
+      {super.key, required this.serviceId, required this.servicePrice});
 
   @override
   _FilteredListScreenState createState() => _FilteredListScreenState();
@@ -171,6 +172,7 @@ class _FilteredListScreenState extends State<FilteredListScreen> {
                                           DoctorDetailsServiceScreen(
                                         doctor:
                                             provider, // Pass the doctor data
+                                        servicePrice: widget.servicePrice,
                                       ),
                                     ),
                                   );

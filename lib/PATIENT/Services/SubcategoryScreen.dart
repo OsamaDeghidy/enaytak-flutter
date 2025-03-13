@@ -1,15 +1,17 @@
-import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'dart:convert';
+
+import 'package:flutter/material.dart';
 import 'package:flutter_sanar_proj/PATIENT/Services/ServiceDetailScreen.dart';
+import 'package:flutter_sanar_proj/constant.dart';
+import 'package:http/http.dart' as http;
 
 class SubcategoryScreen extends StatefulWidget {
   final List<Map<String, dynamic>> subcategoryIds;
 
   const SubcategoryScreen({
-    Key? key,
+    super.key,
     required this.subcategoryIds,
-  }) : super(key: key);
+  });
 
   @override
   _SubcategoryScreenState createState() => _SubcategoryScreenState();
@@ -63,7 +65,7 @@ class _SubcategoryScreenState extends State<SubcategoryScreen> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
-        title: Text('Subcategory Screen'),
+        title: const Text('Subcategory Screen'),
       ),
       body: Container(
         decoration: BoxDecoration(
@@ -82,15 +84,15 @@ class _SubcategoryScreenState extends State<SubcategoryScreen> {
               for (var subcategory in widget.subcategoryIds) ...[
                 Text(
                   subcategory['name'],
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 // Display services for the current subcategory
                 _buildServiceList(subcategory['id']),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
               ],
             ],
           ),
@@ -104,14 +106,14 @@ class _SubcategoryScreenState extends State<SubcategoryScreen> {
 
     // If services are still loading, show a loading indicator
     if (services == null) {
-      return Center(
+      return const Center(
         child: CircularProgressIndicator(),
       );
     }
 
     // If no services are found, display a message
     if (services.isEmpty) {
-      return Text(
+      return const Text(
         'No services available for this subcategory.',
         style: TextStyle(color: Colors.grey),
       );
@@ -155,11 +157,11 @@ class ServiceItem extends StatelessWidget {
   final dynamic price;
 
   const ServiceItem({
-    Key? key,
+    super.key,
     required this.photo,
     required this.name,
     required this.price,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -168,7 +170,7 @@ class ServiceItem extends StatelessWidget {
 
     return Container(
       width: 150,
-      margin: EdgeInsets.only(right: 16),
+      margin: const EdgeInsets.only(right: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -182,19 +184,19 @@ class ServiceItem extends StatelessWidget {
               height: 120,
             ),
           ),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           // Service Name
           Text(
             name,
-            style: TextStyle(fontWeight: FontWeight.bold),
+            style: const TextStyle(fontWeight: FontWeight.bold),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
-          SizedBox(height: 4),
+          const SizedBox(height: 4),
           // Service Price
           Text(
-            "\$${displayPrice.toStringAsFixed(2)}",
-            style: TextStyle(color: Colors.teal),
+            "${displayPrice.toStringAsFixed(2)} ${Constant.currency}",
+            style: const TextStyle(color: Colors.teal),
           ),
         ],
       ),

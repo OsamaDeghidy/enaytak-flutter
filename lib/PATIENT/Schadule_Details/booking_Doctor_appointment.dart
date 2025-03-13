@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_sanar_proj/PATIENT/Schadule_Details/payment_page.dart';
 import 'package:flutter_sanar_proj/PATIENT/Widgets/Constant_Widgets/custom_bottomNAVbar.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
@@ -152,7 +151,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
     return null;
   }
 
-  Future<void> _onBookAppointment() async {
+  Future<void> onBookAppointment() async {
     if (selectedDate != null &&
         selectedTime != null &&
         token != null &&
@@ -367,26 +366,61 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
               },
             ),
             const SizedBox(height: 40),
-            ElevatedButton(
-              // onPressed: _onBookAppointment,
-              onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const PaymentPage()));
-              },
-              style: ElevatedButton.styleFrom(
-                minimumSize: const Size(double.infinity, 50),
-                backgroundColor: Colors.teal,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15),
-                ),
-              ),
-              child: const Text(
-                'Book Appointment',
-                style: TextStyle(fontSize: 18, color: Colors.white),
-              ),
-            ),
+            // ElevatedButton(
+            //   // onPressed: _onBookAppointment,
+            //   onPressed: () {
+            //     Navigator.push(
+            //         context,
+            //         MaterialPageRoute(
+            //             builder: (context) => PaymentPage(
+            //                   onPressed: () {
+            //                     if (selectedDate != null &&
+            //                         selectedTime != null &&
+            //                         token != null &&
+            //                         userId != null &&
+            //                         doctorID != null) {
+            //                       AppointmentService().createAppointment(
+            //                         context: context,
+            //                         selectedDate: selectedDate!,
+            //                         userId: userId!,
+            //                         doctorID: doctorID!,
+            //                         onSuccess: () {
+            //                           Navigator.pop(context);
+            //                           Navigator.pop(context);
+            //                         },
+            //                         onFailure: (String message) {
+            //                           ScaffoldMessenger.of(context)
+            //                               .showSnackBar(
+            //                             SnackBar(
+            //                               content: Text(message),
+            //                             ),
+            //                           );
+            //                         },
+            //                       );
+            //                     } else {
+            //                       ScaffoldMessenger.of(context).showSnackBar(
+            //                         const SnackBar(
+            //                           content: Text(
+            //                               'Payment failed. Please try again.'),
+            //                           backgroundColor: Colors.red,
+            //                         ),
+            //                       );
+            //                     }
+            //                   },
+            //                 )));
+            //   },
+            //   style: ElevatedButton.styleFrom(
+            //     minimumSize: const Size(double.infinity, 50),
+            //     backgroundColor: Colors.teal,
+            //     shape: RoundedRectangleBorder(
+            //       borderRadius: BorderRadius.circular(15),
+            //     ),
+            //   ),
+            //   child: const Text(
+            //     'Book Appointment',
+            //     style: TextStyle(fontSize: 18, color: Colors.white),
+            //   ),
+            // ),
           ],
         ),
       ),

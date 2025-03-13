@@ -1,20 +1,23 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_sanar_proj/PATIENT/Widgets/Constant_Widgets/custom_bottomNAVbar.dart';
-import 'package:intl/intl.dart';
-import 'package:http/http.dart' as http;
 import 'dart:convert';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_sanar_proj/PATIENT/Schadule_Details/payment_page.dart';
+import 'package:flutter_sanar_proj/PATIENT/Widgets/Constant_Widgets/custom_bottomNAVbar.dart';
+import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class booking_Doctor_service_appointment extends StatefulWidget {
-  const booking_Doctor_service_appointment({super.key});
-
+class BookingDoctorServiceAppointment extends StatefulWidget {
+  const BookingDoctorServiceAppointment(
+      {super.key, required this.servicePrice});
+  final String servicePrice;
   @override
-  _booking_Doctor_service_appointmentState createState() =>
-      _booking_Doctor_service_appointmentState();
+  _BookingDoctorServiceAppointmentState createState() =>
+      _BookingDoctorServiceAppointmentState();
 }
 
-class _booking_Doctor_service_appointmentState
-    extends State<booking_Doctor_service_appointment> {
+class _BookingDoctorServiceAppointmentState
+    extends State<BookingDoctorServiceAppointment> {
   DateTime? selectedDate;
   TimeOfDay? selectedTime;
   List<Map<String, dynamic>> availableSlots = []; // To hold available slots
@@ -207,7 +210,7 @@ class _booking_Doctor_service_appointmentState
           );
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => MainScreen()),
+            MaterialPageRoute(builder: (context) => const MainScreen()),
           );
         } else {
           final responseBody = json.decode(response.body);
@@ -217,7 +220,7 @@ class _booking_Doctor_service_appointmentState
               'Another user booked this appointment. Please select another time.';
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('$errorMessage'),
+              content: Text(errorMessage),
               backgroundColor: Colors.red,
             ),
           );
@@ -243,6 +246,7 @@ class _booking_Doctor_service_appointmentState
 
   @override
   Widget build(BuildContext context) {
+    debugPrint('service price ${widget.servicePrice}');
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -369,7 +373,54 @@ class _booking_Doctor_service_appointmentState
               ),
               const SizedBox(height: 40),
               ElevatedButton(
-                onPressed: _onBookAppointment,
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => PaymentPage(
+                                doctorID: doctorID,
+                                userId: userId,
+                                selectedDate: selectedDate,
+
+                                // onPressed: () {
+                                //   debugPrint(
+                                //       'we call the payment page , onPressed');
+                                //   if (selectedDate != null &&
+                                //       selectedTime != null &&
+                                //       token != null &&
+                                //       userId != null &&
+                                //       doctorID != null) {
+                                //     AppointmentService().createAppointment(
+                                //       context: context,
+                                //       selectedDate: selectedDate!,
+                                //       userId: userId!,
+                                //       doctorID: doctorID!,
+                                //       onSuccess: () {
+                                //         Navigator.pop(context);
+                                //         Navigator.pop(context);
+                                //       },
+                                //       onFailure: (String message) {
+                                //         ScaffoldMessenger.of(context)
+                                //             .showSnackBar(
+                                //           SnackBar(
+                                //             content: Text(message),
+                                //           ),
+                                //         );
+                                //       },
+                                //     );
+                                //   } else {
+                                //     ScaffoldMessenger.of(context).showSnackBar(
+                                //       const SnackBar(
+                                //         content: Text(
+                                //             'Payment failed. Please try again.'),
+                                //         backgroundColor: Colors.red,
+                                //       ),
+                                //     );
+                                //   }
+                                // },
+                                servicePrice: widget.servicePrice,
+                              )));
+                },
                 style: ElevatedButton.styleFrom(
                   minimumSize: const Size(double.infinity, 50),
                   backgroundColor: Colors.teal,

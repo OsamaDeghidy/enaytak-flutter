@@ -1,5 +1,7 @@
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_sanar_proj/constant.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart'; // Import the intl package
 
@@ -138,8 +140,9 @@ class _AppointmentDetailsScreenState extends State<AppointmentDetailsScreen> {
                         'Description', serviceData['description'] ?? 'N/A',
                         icon: Icons.description),
                     _buildCardInfo(
-                        'Price', '\$${serviceData['price'] ?? '0.00'}',
-                        icon: Icons.attach_money),
+                      'Price',
+                      '\$${serviceData['price'] ?? 0} ${Constant.currency}',
+                    ),
                     _buildCardInfo('Duration', serviceData['duration'] ?? 'N/A',
                         icon: Icons.timer),
 

@@ -1,9 +1,11 @@
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_sanar_proj/PATIENT/Widgets/Constant_Widgets/custom_AppBar.dart';
 import 'package:flutter_sanar_proj/STTAFF/Doctor_Screen/staff_addService.dart';
+import 'package:flutter_sanar_proj/constant.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_sanar_proj/PATIENT/Widgets/Constant_Widgets/custom_AppBar.dart';
 import 'package:shimmer/shimmer.dart';
 
 class StaffHomeScreen extends StatefulWidget {
@@ -180,13 +182,13 @@ class _StaffHomeScreenState extends State<StaffHomeScreen> {
       backgroundColor: Colors.white,
       appBar: const CustomAppBar(),
       body: isLoading
-          ? Center(
+          ? const Center(
               child: CircularProgressIndicator(
                 color: Colors.teal,
               ),
             )
           : staffProfile == null
-              ? Center(
+              ? const Center(
                   child: Text(
                     'Failed to load profile data.',
                     style: TextStyle(color: Colors.red, fontSize: 16),
@@ -261,7 +263,7 @@ class _StaffHomeScreenState extends State<StaffHomeScreen> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => StaffAddservice()),
+                                builder: (context) => const StaffAddservice()),
                           );
                         },
                         icon: const Icon(Icons.add, color: Colors.black),
@@ -413,7 +415,7 @@ class _StaffHomeScreenState extends State<StaffHomeScreen> {
                                             ),
                                             if (serviceDetails != null)
                                               Text(
-                                                'Price: \$${serviceDetails['price']}',
+                                                'Price:  ${serviceDetails['price']} ${Constant.currency}',
                                                 style: const TextStyle(
                                                   fontSize: 14,
                                                   color: Colors.teal,

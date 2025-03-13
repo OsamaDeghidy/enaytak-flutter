@@ -1,8 +1,11 @@
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_sanar_proj/PATIENT/Widgets/Constant_Widgets/custom_AppBar.dart';
+import 'package:flutter_sanar_proj/constant.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_sanar_proj/PATIENT/Widgets/Constant_Widgets/custom_AppBar.dart';
+
 import 'add_diagnosis.dart'; // Import the AddDiagnosisScreen
 
 class StaffAppointmentScreen extends StatefulWidget {
@@ -275,10 +278,11 @@ class _TabbedListState extends State<TabbedList>
       children: [
         Container(
           decoration: BoxDecoration(
-            color: Colors.teal[400],
-            borderRadius: BorderRadius.circular(12),
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(50),
           ),
           child: TabBar(
+            physics: const BouncingScrollPhysics(),
             controller: _tabController,
             isScrollable: false,
             labelColor: Colors.white,
@@ -287,15 +291,20 @@ class _TabbedListState extends State<TabbedList>
                 const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             indicator: BoxDecoration(
               color: Colors.teal[600],
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(50),
             ),
             tabs: widget.tabs
                 .map((tab) => Tab(
                       text: tab.title,
                     ))
                 .toList(),
+            indicatorSize: TabBarIndicatorSize.tab,
+            padding: EdgeInsets.zero,
+            indicatorPadding: EdgeInsets.zero,
+            dividerColor: Colors.transparent,
           ),
         ),
+        const SizedBox(height: 16),
         Expanded(
           child: TabBarView(
             controller: _tabController,
@@ -361,7 +370,7 @@ class ListContent extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  '\$${listItem.trailing}',
+                  '${listItem.trailing} ${Constant.currency}',
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,

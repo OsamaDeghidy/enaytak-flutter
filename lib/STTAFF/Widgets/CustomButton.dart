@@ -4,8 +4,9 @@ import 'package:responsive_sizer/responsive_sizer.dart';
 
 class CustomButton extends StatelessWidget {
   final String text; // Text to display on the button
-  final Color color; // Color of the button
-  final VoidCallback onPressed; // Function to execute when the button is pressed
+  final Color? color; // Color of the button
+  final VoidCallback
+      onPressed; // Function to execute when the button is pressed
   final double? height; // Height of the button
   final double? width; // Width of the button
 
@@ -16,7 +17,7 @@ class CustomButton extends StatelessWidget {
     required this.color,
     required this.onPressed,
     this.height, // Optional height
-    this.width,  // Optional width
+    this.width, // Optional width
   });
 
   @override

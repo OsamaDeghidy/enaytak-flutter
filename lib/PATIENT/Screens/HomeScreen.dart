@@ -316,10 +316,10 @@ class _HomePageState extends State<HomePage> {
                   return GridView.builder(
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
+                      crossAxisCount: 2,
                       mainAxisSpacing: 14,
                       crossAxisSpacing: 14,
-                      childAspectRatio: 1,
+                      mainAxisExtent: 80,
                     ),
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
@@ -350,16 +350,17 @@ class _HomePageState extends State<HomePage> {
                               ),
                             ],
                           ),
-                          padding: const EdgeInsets.all(12),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                          padding: const EdgeInsetsDirectional.symmetric(
+                              horizontal: 20, vertical: 12),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               Icon(
                                 _getServiceIcon(service['id']),
                                 size: 36,
                                 color: const Color(0xFF0782BA),
                               ),
-                              const SizedBox(height: 8),
+                              const SizedBox(width: 12),
                               Text(
                                 service['name'],
                                 textAlign: TextAlign.center,

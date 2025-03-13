@@ -1,8 +1,8 @@
 import 'dart:convert';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:file_picker/file_picker.dart';
-import 'package:path/path.dart' as path;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class DiagnosisPage extends StatefulWidget {
@@ -46,7 +46,7 @@ class _DiagnosisPageState extends State<DiagnosisPage> {
   String? userType; // Variable to hold the user type
 
   List<dynamic> results = [];
-  bool _isRecordAvailable = false;
+  final bool _isRecordAvailable = false;
   bool _isUploadingFile = false; // Track file upload state
 
   String? file_Type;
@@ -84,10 +84,10 @@ class _DiagnosisPageState extends State<DiagnosisPage> {
       "is_follow_up": true,
       "is_confirmed": newStatus == "confirmed",
       "patient": widget.patientId,
-      "doctor": widget.doctorId ?? null,
-      "nurse": widget.nurseId ?? null,
-      "hospital": widget.hospitalId ?? null,
-      "lab": widget.labId ?? null,
+      "doctor": widget.doctorId,
+      "nurse": widget.nurseId,
+      "hospital": widget.hospitalId,
+      "lab": widget.labId,
       "services": widget.services,
     };
 
@@ -127,10 +127,10 @@ class _DiagnosisPageState extends State<DiagnosisPage> {
     final body = {
       "notes": _notesController.text,
       "patient": widget.patientId,
-      "doctor": widget.doctorId ?? null,
-      "nurse": widget.nurseId ?? null,
-      "hospital": widget.hospitalId ?? null,
-      "lab": widget.labId ?? null,
+      "doctor": widget.doctorId,
+      "nurse": widget.nurseId,
+      "hospital": widget.hospitalId,
+      "lab": widget.labId,
       "services": widget.services,
       "service_type": widget.service_type,
       // Only update the notes field
@@ -285,7 +285,7 @@ class _DiagnosisPageState extends State<DiagnosisPage> {
       Navigator.pop(context);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('this user doesnt have a medical record')),
+        const SnackBar(content: Text('this user doesnt have a medical record')),
       );
     }
   }
@@ -309,21 +309,14 @@ class _DiagnosisPageState extends State<DiagnosisPage> {
       final data = json.decode(response.body);
       results = data['results'];
 
-      if (results != null) {
-        results = data['results']
-            .where((result) =>
-                result['medical_diagnosis'] == _existingDiagnosis!['id'])
-            .toList();
+      results = data['results']
+          .where((result) =>
+              result['medical_diagnosis'] == _existingDiagnosis!['id'])
+          .toList();
 
-        setState(() {
-          _isLoading = false;
-        });
-      } else {
-        setState(() {
-          _isLoading = false;
-          _isRecordAvailable = false;
-        });
-      }
+      setState(() {
+        _isLoading = false;
+      });
     } else {
       setState(() {
         _isLoading = false;
@@ -337,13 +330,12 @@ class _DiagnosisPageState extends State<DiagnosisPage> {
     final userId = prefs.getInt('userId');
 
     if (userId == null ||
-        widget.patientId == null ||
         file.path == null ||
         file_Type == null ||
         _medicalRecord!['id'] == null ||
         _existingDiagnosis == null) {
       print(
-          'something is ${userId} ${widget.patientId} ${file.path} ${file_Type} ${_medicalRecord!['id']}');
+          'something is $userId ${widget.patientId} ${file.path} $file_Type ${_medicalRecord!['id']}');
       return;
     }
     setState(() {
@@ -398,7 +390,7 @@ class _DiagnosisPageState extends State<DiagnosisPage> {
   Widget _buildFileTypeDropdown() {
     return DropdownButton<String>(
       value: file_Type,
-      hint: Text("Select file type"),
+      hint: const Text("Select file type"),
       onChanged: (String? newValue) {
         setState(() {
           file_Type = newValue;
@@ -525,7 +517,7 @@ class _DiagnosisPageState extends State<DiagnosisPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add Diagnosis '),
+        title: const Text('Add Diagnosis '),
         backgroundColor: Colors.teal,
       ),
       body: _isLoading
@@ -537,9 +529,9 @@ class _DiagnosisPageState extends State<DiagnosisPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     if (isCancelled)
-                      Text(
+                      const Text(
                         "This appointment is cancelled. Diagnosis submission is not allowed.",
-                        style: const TextStyle(color: Colors.red, fontSize: 16),
+                        style: TextStyle(color: Colors.red, fontSize: 16),
                       ),
                     if (userType == 'lab')
                       Column(
@@ -798,7 +790,7 @@ class _DiagnosisPageState extends State<DiagnosisPage> {
       children: [
         Text(
           'Upload Medical File: ${_medicalRecord!['id']} ${widget.patientId}',
-          style: TextStyle(fontWeight: FontWeight.bold),
+          style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         _buildFileTypeDropdown(), // Dropdown for file type
         const SizedBox(height: 8),

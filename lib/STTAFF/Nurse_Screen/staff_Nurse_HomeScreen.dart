@@ -1,9 +1,11 @@
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_sanar_proj/PATIENT/Widgets/Constant_Widgets/custom_AppBar.dart';
 import 'package:flutter_sanar_proj/STTAFF/Nurse_Screen/staff_Nurse_addService.dart';
+import 'package:flutter_sanar_proj/constant.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_sanar_proj/PATIENT/Widgets/Constant_Widgets/custom_AppBar.dart';
 import 'package:shimmer/shimmer.dart';
 
 class Staff_Nurse_HomeScreen extends StatefulWidget {
@@ -179,13 +181,13 @@ class _Staff_Nurse_HomeScreenState extends State<Staff_Nurse_HomeScreen> {
       backgroundColor: Colors.white,
       appBar: const CustomAppBar(),
       body: isLoading
-          ? Center(
+          ? const Center(
               child: CircularProgressIndicator(
                 color: Colors.teal,
               ),
             )
           : staffProfile == null
-              ? Center(
+              ? const Center(
                   child: Text(
                     'Failed to load profile data.',
                     style: TextStyle(color: Colors.red, fontSize: 16),
@@ -260,7 +262,8 @@ class _Staff_Nurse_HomeScreenState extends State<Staff_Nurse_HomeScreen> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => Staff_Nurse_Addservice()),
+                                builder: (context) =>
+                                    const Staff_Nurse_Addservice()),
                           );
                         },
                         icon: const Icon(Icons.add, color: Colors.black),
@@ -412,7 +415,7 @@ class _Staff_Nurse_HomeScreenState extends State<Staff_Nurse_HomeScreen> {
                                             ),
                                             if (serviceDetails != null)
                                               Text(
-                                                'Price: \$${serviceDetails['price']}',
+                                                'Price:  ${serviceDetails['price']} ${Constant.currency}',
                                                 style: const TextStyle(
                                                   fontSize: 14,
                                                   color: Colors.teal,

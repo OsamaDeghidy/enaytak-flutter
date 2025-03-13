@@ -1,17 +1,19 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_sanar_proj/PATIENT/Widgets/Constant_Widgets/custom_AppBar.dart';
 import 'package:flutter_sanar_proj/STTAFF/Doctor_Screen/staff_SubmitedScadualing.dart';
 import 'package:flutter_sanar_proj/STTAFF/Widgets/CustomButton.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
-import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Staff_Nurse_ScheduleScreen extends StatefulWidget {
   const Staff_Nurse_ScheduleScreen({super.key});
 
   @override
-  _Staff_Nurse_ScheduleScreenState createState() => _Staff_Nurse_ScheduleScreenState();
+  _Staff_Nurse_ScheduleScreenState createState() =>
+      _Staff_Nurse_ScheduleScreenState();
 }
 
 class _Staff_Nurse_ScheduleScreenState extends State<Staff_Nurse_ScheduleScreen>
@@ -80,17 +82,17 @@ class _Staff_Nurse_ScheduleScreenState extends State<Staff_Nurse_ScheduleScreen>
 
       if (response.statusCode == 201) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Schedule submitted successfully!')),
+          const SnackBar(content: Text('Schedule submitted successfully!')),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
               content: Text('Failed to submit schedule. Please try again.')),
         );
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('An error occurred. Please try again.')),
+        const SnackBar(content: Text('An error occurred. Please try again.')),
       );
     }
   }
@@ -107,9 +109,10 @@ class _Staff_Nurse_ScheduleScreenState extends State<Staff_Nurse_ScheduleScreen>
             child: Container(
               height: 50,
               margin: const EdgeInsets.symmetric(horizontal: 10),
+              padding: const EdgeInsets.symmetric(vertical: 6),
               decoration: BoxDecoration(
                 color: Colors.grey[300],
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(50),
               ),
               child: TabBar(
                 controller: _tabController,
@@ -120,15 +123,18 @@ class _Staff_Nurse_ScheduleScreenState extends State<Staff_Nurse_ScheduleScreen>
                     const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 indicator: BoxDecoration(
                   color: const Color.fromARGB(255, 3, 190, 150),
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(50),
                 ),
-                indicatorSize: TabBarIndicatorSize.tab,
                 tabs: daysOfWeek
                     .map((day) => Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 1),
                           child: Center(child: Text(day)),
                         ))
                     .toList(),
+                indicatorSize: TabBarIndicatorSize.tab,
+                padding: EdgeInsets.zero,
+                indicatorPadding: EdgeInsets.zero,
+                dividerColor: Colors.transparent,
               ),
             ),
           ),
@@ -321,7 +327,7 @@ class ScheduleWidget extends StatelessWidget {
               child: AbsorbPointer(
                 child: TextFormField(
                   controller: fromTimeController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Start Time',
                     hintText: 'HH:mm:ss',
                     border: OutlineInputBorder(),
@@ -343,7 +349,7 @@ class ScheduleWidget extends StatelessWidget {
               child: AbsorbPointer(
                 child: TextFormField(
                   controller: toTimeController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'End Time',
                     hintText: 'HH:mm:ss',
                     border: OutlineInputBorder(),
