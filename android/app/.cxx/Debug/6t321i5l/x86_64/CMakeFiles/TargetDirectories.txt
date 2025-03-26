@@ -1,2 +1,0 @@
-H:/Flutter Projects/eeenaytak-main/android/app/.cxx/Debug/6t321i5l/x86_64/CMakeFiles/edit_cache.dir
-H:/Flutter Projects/eeenaytak-main/android/app/.cxx/Debug/6t321i5l/x86_64/CMakeFiles/rebuild_cache.dir
