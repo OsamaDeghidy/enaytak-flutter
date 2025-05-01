@@ -1,6 +1,10 @@
 import 'dart:io';
-import 'package:flutter/material.dart';
+
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_sanar_proj/constant.dart';
+import 'package:flutter_sanar_proj/core/widgets/custom_gradiant_icon_widget.dart';
+import 'package:flutter_sanar_proj/core/widgets/custom_gradiant_text_widget.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -185,7 +189,7 @@ class _RegistrationDoctorScreenState extends State<RegistrationDoctorScreen> {
           '${widget.staffType} Registration',
           style: const TextStyle(color: Colors.white),
         ),
-        backgroundColor: Colors.teal,
+        backgroundColor: Constant.primaryColor,
         elevation: 4,
       ),
       body: SingleChildScrollView(
@@ -283,7 +287,8 @@ class _RegistrationDoctorScreenState extends State<RegistrationDoctorScreen> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
                   ),
-                  backgroundColor: isSubmitting ? Colors.grey : Colors.teal,
+                  backgroundColor:
+                      isSubmitting ? Colors.grey : Constant.primaryColor,
                 ),
                 child: isSubmitting
                     ? const CircularProgressIndicator(color: Colors.white)
@@ -319,19 +324,13 @@ class _RegistrationDoctorScreenState extends State<RegistrationDoctorScreen> {
           children: [
             Row(
               children: [
-                Icon(icon, color: Colors.teal, size: 24),
+                CustomGradiantIconWidget(icon: icon, iconSize: 24),
                 const SizedBox(width: 8),
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.teal,
-                  ),
-                ),
+                CustomGradiantTextWidget(
+                    text: title, fontSize: 20, fontWeight: FontWeight.bold),
               ],
             ),
-            const Divider(thickness: 1, color: Colors.teal),
+            const Divider(thickness: 1, color: Constant.primaryColor),
             ...children,
           ],
         ),
@@ -350,10 +349,18 @@ class _RegistrationDoctorScreenState extends State<RegistrationDoctorScreen> {
       value: value,
       decoration: InputDecoration(
         labelText: label,
-        prefixIcon: Icon(icon, color: Colors.teal),
+        prefixIcon: CustomGradiantIconWidget(icon: icon),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: Colors.teal, width: 1),
+          borderSide: const BorderSide(color: Constant.primaryColor, width: 1),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: const BorderSide(color: Constant.primaryColor, width: 1),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: const BorderSide(color: Colors.red, width: 1),
         ),
       ),
       items: items
@@ -379,12 +386,11 @@ class _RegistrationDoctorScreenState extends State<RegistrationDoctorScreen> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
         ),
-        backgroundColor: Colors.teal.withOpacity(0.1),
       ),
-      icon: Icon(icon, color: Colors.teal),
+      icon: CustomGradiantIconWidget(icon: icon),
       label: Text(
         filePath == null ? label : '${label.split(" ")[0]} Selected',
-        style: const TextStyle(color: Colors.teal),
+        style: const TextStyle(color: Constant.primaryColor),
       ),
     );
   }

@@ -1,12 +1,19 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_sanar_proj/PATIENT/Services/ServiceListScreen.dart';
 import 'package:flutter_sanar_proj/PATIENT/Services/SubcategoryScreen.dart';
+import 'package:flutter_sanar_proj/constant.dart';
+import 'package:flutter_sanar_proj/core/widgets/custom_gradiant_icon_widget.dart';
+import 'package:geolocator/geolocator.dart';
 // import 'package:flutter_sanar_proj/PATIENT/Services/SubcategoryServicdeScreen.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../core/helper/app_helper.dart';
+import '../../core/widgets/custom_button.dart';
+import '../../core/widgets/custom_gradiant_text_widget.dart';
 
 class GoogleMapScreen extends StatefulWidget {
   final String serviceName;
@@ -24,7 +31,7 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
   LatLng _selectedLocation =
       const LatLng(37.7749, -122.4194); // Default location
   bool _loadingLocation = false;
-
+  bool _isloadingSumbit = false;
   // Get current user location
   Future<void> _getUserLocation() async {
     setState(() {
@@ -37,18 +44,10 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
         setState(() {
           _loadingLocation = false;
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text(
-                'Location services are disabled. Please enable them in settings.'),
-            action: SnackBarAction(
-              label: 'Open Settings',
-              onPressed: () {
-                Geolocator.openLocationSettings();
-              },
-            ),
-          ),
-        );
+        AppHelper.errorSnackBar(
+            context: context,
+            message:
+                "Location services are disabled. Please enable them in settings.");
         return;
       }
 
@@ -59,12 +58,9 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
           setState(() {
             _loadingLocation = false;
           });
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content:
-                  Text('Location permission is required to use this feature.'),
-            ),
-          );
+          AppHelper.errorSnackBar(
+              context: context,
+              message: "Location permission is required to use this feature.");
           return;
         }
       }
@@ -73,18 +69,10 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
         setState(() {
           _loadingLocation = false;
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text(
-                'Location permissions are permanently denied. Please allow them in settings.'),
-            action: SnackBarAction(
-              label: 'Open Settings',
-              onPressed: () {
-                Geolocator.openAppSettings();
-              },
-            ),
-          ),
-        );
+        AppHelper.errorSnackBar(
+            context: context,
+            message:
+                "Location permissions are permanently denied. Please allow them in settings.");
         return;
       }
 
@@ -106,13 +94,15 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
       setState(() {
         _loadingLocation = false;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error fetching location: $e')),
-      );
+      AppHelper.errorSnackBar(
+          context: context, message: "Error fetching location");
     }
   }
 
   Future<void> _submitLocation() async {
+    setState(() {
+      _isloadingSumbit = true;
+    });
     final url = Uri.parse('http://67.205.166.136/api/locations/add/');
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
@@ -121,7 +111,7 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
     int? serviceId = prefs.getInt('serviceId');
 
     if (token == null || userId == null || serviceId == null) {
-      print('Token, User ID, or Service ID is null. Please log in again.');
+      debugPrint('Token, User ID, or Service ID is null. Please log in again.');
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Authentication required. Please log in again.'),
@@ -141,12 +131,12 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
       "service_id": serviceId,
     });
 
-    print('Submitting the following data:');
-    print('Latitude: ${_selectedLocation.latitude}');
-    print('Longitude: ${_selectedLocation.longitude}');
-    print('Location Type: home');
-    print('User ID: $userId');
-    print('Token: $token');
+    debugPrint('Submitting the following data:');
+    debugPrint('Latitude: ${_selectedLocation.latitude}');
+    debugPrint('Longitude: ${_selectedLocation.longitude}');
+    debugPrint('Location Type: home');
+    debugPrint('User ID: $userId');
+    debugPrint('Token: $token');
 
     try {
       final response = await http.post(
@@ -170,18 +160,13 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
         );
 
         if (selectedService.isEmpty) {
-          print('Service not found.');
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Service not found.')),
-          );
+          debugPrint('Service not found.');
+          AppHelper.errorSnackBar(
+              context: context, message: "Service not found.");
           return;
         }
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text("Location submited successful!",
-                  style: TextStyle(color: Colors.green))),
-        );
+        AppHelper.successSnackBar(
+            context: context, message: "Location submited successful!");
 
         // Handle navigation based on subcategory_ids and service_ids
         final subcategoryIds = selectedService['subcategory_ids'] as List;
@@ -199,8 +184,8 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
         }).toList();
 
         // Fetch service categories to determine navigation
-        print(subcategoryIds);
-        print(serviceList);
+        debugPrint('subcategoryIds $subcategoryIds');
+        debugPrint('serviceList $serviceList');
 
         if (subcategoryIds.isEmpty && serviceList.isEmpty) {
           // Navigator.push(
@@ -211,8 +196,8 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
           //     ),
           //   ),
           // );
-          print(subcategoryIds);
-          print(serviceList);
+          debugPrint(' subcategoryIds $subcategoryIds');
+          debugPrint(' serviceList $serviceList');
         } else if (subcategoryIds.isNotEmpty && serviceList.isNotEmpty) {
           Navigator.push(
             context,
@@ -224,8 +209,8 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
             ),
           );
 
-          print(subcategoryIds);
-          print(serviceList);
+          debugPrint('subcategoryIds $subcategoryIds');
+          debugPrint('serviceList $serviceList');
         } else if (subcategoryIds.isEmpty && serviceList.isNotEmpty) {
           Navigator.push(
             context,
@@ -236,25 +221,24 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
             ),
           );
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Unknown service configuration.')),
-          );
-          print(subcategoryIds);
-          print(serviceList);
+          AppHelper.errorSnackBar(
+              context: context, message: "Unknown service configuration.");
+          debugPrint('subcategoryIds $subcategoryIds');
+          debugPrint('serviceList $serviceList');
         }
       } else {
         final responseData = json.decode(response.body);
         final errorMessage = responseData['detail'] ?? 'An error occurred.';
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $errorMessage')),
-        );
+        AppHelper.errorSnackBar(
+            context: context, message: "Error: $errorMessage");
       }
     } catch (e) {
-      print('Exception: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Exception: $e')),
-      );
+      debugPrint('Exception: $e');
+      AppHelper.errorSnackBar(context: context, message: "Exception: $e");
     }
+    setState(() {
+      _isloadingSumbit = false;
+    });
   }
 
   Future<List<Map<String, dynamic>>> fetchServices() async {
@@ -333,23 +317,17 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
                 borderRadius: BorderRadius.circular(12),
               ),
               elevation: 4,
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+              child: const Padding(
+                padding: EdgeInsets.symmetric(vertical: 16, horizontal: 20),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
-                      'Find Your Location',
-                      style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.black87),
+                    CustomGradiantTextWidget(
+                      text: 'Find Your Location',
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
                     ),
-                    Icon(
-                      Icons.place,
-                      color: Colors.teal.shade600,
-                    ),
+                    CustomGradiantIconWidget(icon: Icons.place),
                   ],
                 ),
               ),
@@ -384,35 +362,23 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  ElevatedButton(
+                  CustomButtonNew(
+                    title: 'Confirm Location',
+                    isLoading: _isloadingSumbit,
+                    isBackgroundPrimary: true,
                     onPressed:
                         _submitLocation, // Call the submitLocation method
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.teal.shade700,
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 12, horizontal: 24),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                    ),
-                    child: const Text(
-                      'Confirm Location',
-                      style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white),
-                    ),
                   ),
                 ],
               ),
             ),
           ),
           Positioned(
-            bottom: 140,
+            bottom: 150,
             right: 16,
             child: FloatingActionButton(
               onPressed: _getUserLocation,
-              backgroundColor: Colors.teal.shade700,
+              backgroundColor: Constant.primaryColor,
               elevation: 4,
               child: const Icon(Icons.my_location, color: Colors.white),
             ),

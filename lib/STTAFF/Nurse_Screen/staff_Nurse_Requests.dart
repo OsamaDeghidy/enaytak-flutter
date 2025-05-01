@@ -1,10 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_sanar_proj/PATIENT/Widgets/Constant_Widgets/custom_AppBar.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class RequestItem {
   final String title;
@@ -24,13 +25,15 @@ class RequestItem {
   });
 }
 
-class Staff_Nurse_RequestScreen extends StatefulWidget {
+class StaffNurseRequestScreen extends StatefulWidget {
+  const StaffNurseRequestScreen({super.key});
+
   @override
-  _Staff_Nurse_RequestScreenState createState() =>
-      _Staff_Nurse_RequestScreenState();
+  _StaffNurseRequestScreenState createState() =>
+      _StaffNurseRequestScreenState();
 }
 
-class _Staff_Nurse_RequestScreenState extends State<Staff_Nurse_RequestScreen> {
+class _StaffNurseRequestScreenState extends State<StaffNurseRequestScreen> {
   List<RequestItem> userRequests = [];
   bool isLoading = true;
 

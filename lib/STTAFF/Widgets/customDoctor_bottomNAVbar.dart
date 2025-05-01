@@ -3,8 +3,8 @@ import 'package:flutter_sanar_proj/STTAFF/Doctor_Screen/staff_Appointment.dart';
 import 'package:flutter_sanar_proj/STTAFF/Doctor_Screen/staff_HomeScreen.dart';
 import 'package:flutter_sanar_proj/STTAFF/Doctor_Screen/staff_Profile.dart';
 import 'package:flutter_sanar_proj/STTAFF/Doctor_Screen/staff_Requests.dart';
-
 import 'package:flutter_sanar_proj/STTAFF/Doctor_Screen/staff_Schadualing.dart';
+import 'package:flutter_sanar_proj/constant.dart';
 
 class StaffMainScreen extends StatefulWidget {
   const StaffMainScreen({super.key});
@@ -19,7 +19,7 @@ class _StaffMainScreenState extends State<StaffMainScreen> {
   // List of screens to navigate between
   final List<Widget> _pages = [
     const StaffHomeScreen(),
-    StaffRequestScreen(),
+    const StaffRequestScreen(),
     const StaffAppointmentScreen(),
     const StaffScheduleScreen(),
     const StaffProfileScreen(),
@@ -32,7 +32,7 @@ class _StaffMainScreenState extends State<StaffMainScreen> {
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         backgroundColor: Colors.white,
-        selectedItemColor: Colors.teal,
+        selectedItemColor: Constant.primaryColor,
         unselectedItemColor: Colors.grey,
         selectedFontSize: 14,
         unselectedFontSize: 12,

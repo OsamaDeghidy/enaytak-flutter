@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_sanar_proj/STTAFF/Widgets/CustomButton.dart';
+import 'package:flutter_sanar_proj/core/widgets/custom_button.dart';
 
 import 'schaduale_widget_doctor.dart';
 
@@ -8,12 +8,13 @@ class DayScheduleDoctor extends StatefulWidget {
   final List<Map<String, dynamic>> schedules;
   final Future<void> Function(String day, String startTime, String endTime)
       submitSchedule;
-
+  final bool isSubmitting;
   const DayScheduleDoctor({
     super.key,
     required this.day,
     required this.schedules,
     required this.submitSchedule,
+    required this.isSubmitting,
   });
 
   @override
@@ -77,18 +78,30 @@ class _DayScheduleDoctorState extends State<DayScheduleDoctor> {
               toTimeController: toTimeControllers['new_schedule']!,
             ),
           const SizedBox(height: 50),
-          CustomButton(
-            text: "Submit",
-            color: Colors.teal[600],
+          CustomButtonNew(
+            width: 250,
+            title: "Submit",
+            isLoading: widget.isSubmitting,
+            isBackgroundPrimary: true,
             onPressed: () {
               // Submit schedule for the day
               final startTime = fromTimeControllers['new_schedule']?.text ?? '';
               final endTime = toTimeControllers['new_schedule']?.text ?? '';
               widget.submitSchedule(widget.day, startTime, endTime);
             },
-            height: 60,
-            width: 250,
           ),
+          // CustomButton(
+          //   text: "Submit",
+          //   color: Colors.teal[600],
+          //   onPressed: () {
+          //     // Submit schedule for the day
+          //     final startTime = fromTimeControllers['new_schedule']?.text ?? '';
+          //     final endTime = toTimeControllers['new_schedule']?.text ?? '';
+          //     widget.submitSchedule(widget.day, startTime, endTime);
+          //   },
+          //   height: 60,
+          //   width: 250,
+          // ),
         ],
       ),
     );

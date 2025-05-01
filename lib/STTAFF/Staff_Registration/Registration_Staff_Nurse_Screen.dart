@@ -1,6 +1,10 @@
 import 'dart:io';
-import 'package:flutter/material.dart';
+
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_sanar_proj/constant.dart';
+import 'package:flutter_sanar_proj/core/widgets/custom_gradiant_icon_widget.dart';
+import 'package:flutter_sanar_proj/core/widgets/custom_gradiant_text_widget.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -182,7 +186,7 @@ class _RegistrationNurseScreenState extends State<RegistrationNurseScreen> {
           '${widget.staffType} Registration',
           style: const TextStyle(color: Colors.white),
         ),
-        backgroundColor: Colors.teal,
+        backgroundColor: Constant.primaryColor,
         elevation: 4,
       ),
       body: SingleChildScrollView(
@@ -195,6 +199,7 @@ class _RegistrationNurseScreenState extends State<RegistrationNurseScreen> {
               icon: Icons.person,
               children: [
                 _buildDropdownField(
+                  icon: Icons.language,
                   label: 'Native Language',
                   value: selectedLanguage,
                   items: languages,
@@ -203,6 +208,7 @@ class _RegistrationNurseScreenState extends State<RegistrationNurseScreen> {
                 ),
                 const SizedBox(height: 12),
                 _buildDropdownField(
+                  icon: Icons.flag,
                   label: 'Country',
                   value: selectedCountry,
                   items: countries,
@@ -210,6 +216,7 @@ class _RegistrationNurseScreenState extends State<RegistrationNurseScreen> {
                 ),
                 const SizedBox(height: 12),
                 _buildDropdownField(
+                  icon: Icons.location_city,
                   label: 'City',
                   value: selectedCity,
                   items: cities,
@@ -222,6 +229,7 @@ class _RegistrationNurseScreenState extends State<RegistrationNurseScreen> {
               icon: Icons.school,
               children: [
                 _buildDropdownField(
+                  icon: Icons.school,
                   label: 'Degree',
                   value: selectedDegree,
                   items: degrees,
@@ -229,6 +237,7 @@ class _RegistrationNurseScreenState extends State<RegistrationNurseScreen> {
                 ),
                 const SizedBox(height: 12),
                 _buildDropdownField(
+                  icon: Icons.medical_services,
                   label: 'Specialization',
                   value: selectedSpecialization,
                   items: specializations,
@@ -237,6 +246,7 @@ class _RegistrationNurseScreenState extends State<RegistrationNurseScreen> {
                 ),
                 const SizedBox(height: 12),
                 _buildDropdownField(
+                  icon: Icons.work,
                   label: 'Classification',
                   value: selectedClassification,
                   items: classifications,
@@ -272,7 +282,8 @@ class _RegistrationNurseScreenState extends State<RegistrationNurseScreen> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
                   ),
-                  backgroundColor: isSubmitting ? Colors.grey : Colors.teal,
+                  backgroundColor:
+                      isSubmitting ? Colors.grey : Constant.primaryColor,
                 ),
                 child: isSubmitting
                     ? const CircularProgressIndicator(color: Colors.white)
@@ -292,8 +303,8 @@ class _RegistrationNurseScreenState extends State<RegistrationNurseScreen> {
   }
 
   Widget _buildSectionCard({
-    required String title,
     required IconData icon,
+    required String title,
     required List<Widget> children,
   }) {
     return Card(
@@ -308,19 +319,13 @@ class _RegistrationNurseScreenState extends State<RegistrationNurseScreen> {
           children: [
             Row(
               children: [
-                Icon(icon, color: Colors.teal, size: 24),
+                CustomGradiantIconWidget(icon: icon, iconSize: 24),
                 const SizedBox(width: 8),
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.teal,
-                  ),
-                ),
+                CustomGradiantTextWidget(
+                    text: title, fontSize: 20, fontWeight: FontWeight.bold),
               ],
             ),
-            const Divider(thickness: 1, color: Colors.teal),
+            const Divider(thickness: 1, color: Constant.primaryColor),
             ...children,
           ],
         ),
@@ -329,6 +334,7 @@ class _RegistrationNurseScreenState extends State<RegistrationNurseScreen> {
   }
 
   Widget _buildDropdownField({
+    required IconData icon,
     required String label,
     required String? value,
     required List<String> items,
@@ -338,18 +344,18 @@ class _RegistrationNurseScreenState extends State<RegistrationNurseScreen> {
       value: value,
       decoration: InputDecoration(
         labelText: label,
-        prefixIcon: Icon(Icons.arrow_drop_down, color: Colors.teal),
+        prefixIcon: CustomGradiantIconWidget(icon: icon),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: Colors.teal, width: 1),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: Colors.teal, width: 1),
+          borderSide: const BorderSide(color: Constant.primaryColor, width: 1),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: Colors.teal, width: 2),
+          borderSide: const BorderSide(color: Constant.primaryColor, width: 1),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: const BorderSide(color: Colors.red, width: 1),
         ),
       ),
       items: items
@@ -369,13 +375,13 @@ class _RegistrationNurseScreenState extends State<RegistrationNurseScreen> {
   }) {
     return ElevatedButton.icon(
       onPressed: onPressed,
-      icon: Icon(Icons.upload, color: Colors.white),
+      icon: const Icon(Icons.upload, color: Colors.white),
       label: Text(
         filePath == null ? label : 'File Selected',
-        style: TextStyle(color: Colors.white),
+        style: const TextStyle(color: Colors.white),
       ),
       style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.teal,
+        backgroundColor: Constant.primaryColor,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),

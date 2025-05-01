@@ -4,9 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_sanar_proj/PATIENT/Widgets/Constant_Widgets/custom_AppBar.dart';
 import 'package:flutter_sanar_proj/STTAFF/Doctor_Screen/staff_addService.dart';
 import 'package:flutter_sanar_proj/constant.dart';
+import 'package:flutter_sanar_proj/core/widgets/custom_gradiant_icon_widget.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
+
+import '../../core/widgets/custom_button.dart';
+import '../../core/widgets/custom_gradiant_text_widget.dart';
+import '../../core/widgets/custom_netowrk_iamge.dart';
 
 class StaffHomeScreen extends StatefulWidget {
   const StaffHomeScreen({super.key});
@@ -195,6 +200,7 @@ class _StaffHomeScreenState extends State<StaffHomeScreen> {
                   ),
                 )
               : Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Header Section
                     SizedBox(
@@ -208,13 +214,11 @@ class _StaffHomeScreenState extends State<StaffHomeScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Text(
-                                    userProfile?['full_name'] ?? 'Loading...',
-                                    style: const TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.teal,
-                                    ),
+                                  CustomGradiantTextWidget(
+                                    text: userProfile?['full_name'] ??
+                                        'Loading...',
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
                                   ),
                                   const SizedBox(height: 10),
                                   Text(
@@ -257,38 +261,36 @@ class _StaffHomeScreenState extends State<StaffHomeScreen> {
 
                     const SizedBox(height: 20),
                     // Add Service Button
-                    Center(
-                      child: ElevatedButton.icon(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const StaffAddservice()),
-                          );
-                        },
-                        icon: const Icon(Icons.add, color: Colors.black),
-                        label: const Text(
-                          'Add Service',
-                          style: TextStyle(color: Colors.black),
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.teal,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                      ),
-                    ),
+
+                    // Center(
+                    //   child: ElevatedButton.icon(
+                    //     onPressed: () {
+                    //       Navigator.push(
+                    //         context,
+                    //         MaterialPageRoute(
+                    //             builder: (context) => const StaffAddservice()),
+                    //       );
+                    //     },
+                    //     icon: const Icon(Icons.add, color: Colors.black),
+                    //     label: const Text(
+                    //       'Add Service',
+                    //       style: TextStyle(color: Colors.black),
+                    //     ),
+                    //     style: ElevatedButton.styleFrom(
+                    //       backgroundColor: Colors.teal,
+                    //       shape: RoundedRectangleBorder(
+                    //         borderRadius: BorderRadius.circular(12),
+                    //       ),
+                    //     ),
+                    //   ),
+                    // ),
                     const SizedBox(height: 20),
                     const Padding(
                       padding: EdgeInsets.symmetric(horizontal: 16.0),
-                      child: Text(
-                        'Upcoming Appointments',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.teal,
-                        ),
+                      child: CustomGradiantTextWidget(
+                        text: 'Upcoming Appointments',
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                     const SizedBox(height: 10),
@@ -355,40 +357,23 @@ class _StaffHomeScreenState extends State<StaffHomeScreen> {
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(10),
                                   side: const BorderSide(
-                                      color: Colors.teal, width: 1),
+                                      color: Constant.primaryColor, width: 1),
                                 ),
                                 child: Padding(
                                   padding: const EdgeInsets.all(16),
                                   child: Row(
                                     children: [
                                       // Service Image
-                                      if (serviceDetails != null &&
-                                          serviceDetails['image'] != null)
-                                        ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          child: Image.network(
-                                            serviceDetails['image'],
-                                            width: 80,
-                                            height: 80,
-                                            fit: BoxFit.cover,
-                                            errorBuilder:
-                                                (context, error, stackTrace) =>
-                                                    Image.asset(
-                                              'assets/images/capsules.png',
-                                              width: 80,
-                                              height: 80,
-                                              fit: BoxFit.cover,
-                                            ),
-                                          ),
-                                        )
-                                      else
-                                        Image.asset(
-                                          'assets/images/capsules.png',
+                                      ClipRRect(
+                                        borderRadius: BorderRadius.circular(10),
+                                        child: CustomNetworkImage(
+                                          imageUrl:
+                                              serviceDetails['image'] ?? '',
                                           width: 80,
                                           height: 80,
                                           fit: BoxFit.cover,
                                         ),
+                                      ),
                                       const SizedBox(width: 16),
                                       // Appointment Details
                                       Expanded(
@@ -396,14 +381,12 @@ class _StaffHomeScreenState extends State<StaffHomeScreen> {
                                           crossAxisAlignment:
                                               CrossAxisAlignment.start,
                                           children: [
-                                            Text(
-                                              serviceDetails?['name'] ??
+                                            CustomGradiantTextWidget(
+                                              text: serviceDetails?['name'] ??
                                                   'Unknown Service',
-                                              style: const TextStyle(
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.black,
-                                              ),
+                                              fontSize:
+                                                  18, // Adjust the font size as needed
+                                              fontWeight: FontWeight.bold,
                                             ),
                                             const SizedBox(height: 8),
                                             Text(
@@ -414,20 +397,19 @@ class _StaffHomeScreenState extends State<StaffHomeScreen> {
                                               ),
                                             ),
                                             if (serviceDetails != null)
-                                              Text(
-                                                'Price:  ${serviceDetails['price']} ${Constant.currency}',
-                                                style: const TextStyle(
-                                                  fontSize: 14,
-                                                  color: Colors.teal,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
+                                              CustomGradiantTextWidget(
+                                                text:
+                                                    'Price:  ${serviceDetails['price']} ${Constant.currency}',
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.bold,
                                               ),
                                           ],
                                         ),
                                       ),
                                       IconButton(
-                                        icon: const Icon(Icons.arrow_forward,
-                                            color: Colors.teal),
+                                        icon: const CustomGradiantIconWidget(
+                                            icon: Icons.arrow_forward,
+                                            iconSize: 20),
                                         onPressed: () {
                                           // Navigate to appointment details if needed
                                         },
@@ -442,6 +424,21 @@ class _StaffHomeScreenState extends State<StaffHomeScreen> {
                       ),
                   ],
                 ),
+      floatingActionButton: Padding(
+        padding: const EdgeInsetsDirectional.symmetric(horizontal: 24),
+        child: CustomButtonNew(
+          title: 'Add Service',
+          isBackgroundPrimary: true,
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const StaffAddservice()),
+            );
+          },
+          isLoading: false,
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 }

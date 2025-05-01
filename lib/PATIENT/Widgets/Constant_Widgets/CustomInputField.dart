@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_sanar_proj/constant.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
@@ -45,7 +46,7 @@ class CustomInputField extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 10),
             child: Icon(icon),
           ),
-          prefixIconColor: Color(0xFF52A0AE),
+          prefixIconColor: Constant.primaryColor,
           labelText: labelText,
           labelStyle: GoogleFonts.inter(
             fontSize: 16.sp,

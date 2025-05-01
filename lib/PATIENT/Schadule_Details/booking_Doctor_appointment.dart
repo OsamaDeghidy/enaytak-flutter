@@ -2,10 +2,13 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_sanar_proj/PATIENT/Widgets/Constant_Widgets/custom_bottomNAVbar.dart';
+import 'package:flutter_sanar_proj/constant.dart';
+import 'package:flutter_sanar_proj/core/helper/app_helper.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:my_fatoorah/my_fatoorah.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:table_calendar/table_calendar.dart';
 
 class ScheduleScreen extends StatefulWidget {
   const ScheduleScreen({super.key});
@@ -87,10 +90,10 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
 
           setState(() {});
         } else {
-          print('Failed to load available slots: ${response.statusCode}');
+          debugPrint('Failed to load available slots: ${response.statusCode}');
         }
       } catch (e) {
-        print('Error fetching available slots: $e');
+        debugPrint('Error fetching available slots: $e');
       }
     }
   }
@@ -227,28 +230,18 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
             );
           }
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Payment failed. Please try again.'),
-              backgroundColor: Colors.red,
-            ),
-          );
+          AppHelper.errorSnackBar(
+              context: context, message: 'Payment failed. Please try again.');
         }
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Failed to process payment. Please try again later.'),
-            backgroundColor: Colors.red,
-          ),
-        );
+        AppHelper.errorSnackBar(
+            context: context,
+            message: 'Failed to process payment. Please try again later.');
       }
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content:
-              Text('Please fill in all the details to book an appointment.'),
-        ),
-      );
+      AppHelper.errorSnackBar(
+          context: context,
+          message: 'Please fill in all the details to book an appointment.');
     }
   }
 
@@ -275,44 +268,45 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                   color: Colors.black),
             ),
             const SizedBox(height: 10),
-            GestureDetector(
-              onTap: () async {
-                final DateTime? picked = await showDatePicker(
-                  context: context,
-                  initialDate: selectedDate ?? DateTime.now(),
-                  firstDate: DateTime.now(),
-                  lastDate: DateTime.now().add(const Duration(days: 30)),
-                );
-                if (picked != null && picked != selectedDate) {
-                  _onDateSelected(picked);
-                }
-              },
-              child: Card(
-                elevation: 5,
-                color:
-                    selectedDate == null ? Colors.grey[300] : Colors.teal[100],
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 16.0),
-                  child: Center(
-                    child: Text(
-                      selectedDate == null
-                          ? 'Select Date'
-                          : DateFormat('yMMMd').format(selectedDate!),
-                      style: TextStyle(
-                        color: selectedDate == null
-                            ? Colors.black
-                            : Colors.teal[800],
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
+            // GestureDetector(
+            //   onTap: () async {
+            //     final DateTime? picked = await showDatePicker(
+            //       context: context,
+            //       initialDate: selectedDate ?? DateTime.now(),
+            //       firstDate: DateTime.now(),
+            //       lastDate: DateTime.now().add(const Duration(days: 30)),
+            //     );
+            //     if (picked != null && picked != selectedDate) {
+            //       _onDateSelected(picked);
+            //     }
+            //   },
+            //   child: Card(
+            //     elevation: 5,
+            //     color:
+            //         selectedDate == null ? Colors.grey[300] : Colors.teal[100],
+            //     shape: RoundedRectangleBorder(
+            //       borderRadius: BorderRadius.circular(15),
+            //     ),
+            //     child: Padding(
+            //       padding: const EdgeInsets.symmetric(vertical: 16.0),
+            //       child: Center(
+            //         child: Text(
+            //           selectedDate == null
+            //               ? 'Select Date'
+            //               : DateFormat('yMMMd').format(selectedDate!),
+            //           style: TextStyle(
+            //             color: selectedDate == null
+            //                 ? Colors.black
+            //                 : Colors.teal[800],
+            //             fontSize: 18,
+            //             fontWeight: FontWeight.w600,
+            //           ),
+            //         ),
+            //       ),
+            //     ),
+            //   ),
+            // ),
+            _calendarSelector(context),
             const SizedBox(height: 20),
             const Text(
               "Select Appointment Time",
@@ -423,6 +417,47 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
             // ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _calendarSelector(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: TableCalendar(
+        focusedDay: selectedDate ?? DateTime.now(),
+        firstDay: DateTime.now(),
+        lastDay: DateTime.now().add(const Duration(days: 30)),
+        selectedDayPredicate: (day) {
+          return isSameDay(selectedDate, day);
+        },
+        calendarStyle: CalendarStyle(
+          todayDecoration: BoxDecoration(
+            color: Constant.primaryColor.withValues(alpha: 0.2),
+            shape: BoxShape.circle,
+          ),
+          selectedDecoration: const BoxDecoration(
+            color: Constant.primaryColor,
+            shape: BoxShape.circle,
+          ),
+          selectedTextStyle: const TextStyle(color: Colors.white),
+        ),
+        onDaySelected: (selectedDay, focusedDay) {
+          setState(() {
+            selectedDate = selectedDay;
+            selectedTime = null;
+          });
+          _onDateSelected(selectedDay); // same logic you already have
+        },
+        headerStyle: const HeaderStyle(
+          formatButtonVisible: false,
+          titleCentered: true,
+          titleTextStyle: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        calendarFormat: CalendarFormat.month,
       ),
     );
   }

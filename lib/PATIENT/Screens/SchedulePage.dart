@@ -1,10 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_sanar_proj/PATIENT/Appointment/AppointmentDetailsScreen.dart';
 import 'package:flutter_sanar_proj/PATIENT/Widgets/Constant_Widgets/custom_AppBar.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SchedulePage extends StatefulWidget {
   const SchedulePage({super.key});
@@ -44,6 +45,7 @@ class _SchedulePageState extends State<SchedulePage> {
       if (response.statusCode == 200) {
         final data = json.decode(utf8.decode(response.bodyBytes));
         allAppointments = data['results'];
+        debugPrint('all appointments $allAppointments');
         await fetchServiceDetails(); // Fetch service details after appointments
         setState(() {
           isLoading = false;

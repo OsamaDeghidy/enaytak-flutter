@@ -3,6 +3,7 @@ import 'package:flutter_sanar_proj/STTAFF/HOSPITAL/Registration_Staff_Hospital_S
 import 'package:flutter_sanar_proj/STTAFF/LAB/Registiration_staff_lab.dart';
 import 'package:flutter_sanar_proj/STTAFF/Staff_Registration/Registration_Staff_Doctor_Screen.dart';
 import 'package:flutter_sanar_proj/STTAFF/Staff_Registration/Registration_Staff_Nurse_Screen.dart';
+import 'package:flutter_sanar_proj/core/widgets/custom_gradiant_icon_widget.dart';
 
 class StaffSelectionScreen extends StatelessWidget {
   const StaffSelectionScreen({super.key});
@@ -114,10 +115,9 @@ class StaffSelectionScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              icon,
-              size: 50,
-              color: Colors.teal,
+            CustomGradiantIconWidget(
+              icon: icon,
+              iconSize: 50,
             ),
             const SizedBox(height: 10),
             Text(
@@ -125,7 +125,7 @@ class StaffSelectionScreen extends StatelessWidget {
               style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: Colors.black87,
+                color: Colors.grey,
               ),
             ),
           ],

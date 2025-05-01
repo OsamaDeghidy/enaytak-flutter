@@ -3,9 +3,11 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_sanar_proj/PATIENT/Widgets/Constant_Widgets/custom_AppBar.dart';
 import 'package:flutter_sanar_proj/constant.dart';
+import 'package:flutter_sanar_proj/core/widgets/custom_button.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../core/widgets/custom_gradiant_text_widget.dart';
 import 'add_diagnosis.dart'; // Import the AddDiagnosisScreen
 
 class StaffAppointmentScreen extends StatefulWidget {
@@ -154,6 +156,7 @@ class _StaffAppointmentScreenState extends State<StaffAppointmentScreen> {
     final url = 'http://67.205.166.136/api/appointments/$appointmentId/';
 
     try {
+      debugPrint('note or link is $note');
       final response = await http.put(
         Uri.parse(url),
         headers: {
@@ -200,7 +203,7 @@ class _StaffAppointmentScreenState extends State<StaffAppointmentScreen> {
       body: isLoading
           ? const Center(
               child: CircularProgressIndicator(
-                color: Colors.teal,
+                color: Constant.primaryColor,
               ),
             )
           : Padding(
@@ -290,7 +293,10 @@ class _TabbedListState extends State<TabbedList>
             labelStyle:
                 const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             indicator: BoxDecoration(
-              color: Colors.teal[600],
+              gradient: const LinearGradient(
+                  colors: Constant.gradientPrimaryColors,
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter),
               borderRadius: BorderRadius.circular(50),
             ),
             tabs: widget.tabs
@@ -352,13 +358,10 @@ class ListContent extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  listItem.title,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.teal,
-                  ),
+                CustomGradiantTextWidget(
+                  text: listItem.title,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
                 ),
                 const SizedBox(height: 8),
                 Text(
@@ -369,35 +372,46 @@ class ListContent extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 8),
-                Text(
-                  '${listItem.trailing} ${Constant.currency}',
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.teal,
-                  ),
+                CustomGradiantTextWidget(
+                  text: '${listItem.trailing} ${Constant.currency}',
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
                 ),
                 const SizedBox(height: 16),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    ElevatedButton(
+                    CustomButtonNew(
+                      width: 160,
+                      height: 40,
+                      title: 'Add Diagnosis',
+                      isBackgroundPrimary: true,
                       onPressed: () {
                         onAddDiagnosis(listItem.id); // Pass appointmentId
                       },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.teal,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      child: const Text(
-                        'Add Diagnosis',
-                        style: TextStyle(color: Colors.white),
-                      ),
+                      isLoading: false,
                     ),
+                    // ElevatedButton(
+                    //   onPressed: () {
+                    //     onAddDiagnosis(listItem.id); // Pass appointmentId
+                    //   },
+                    //   style: ElevatedButton.styleFrom(
+                    //     backgroundColor: Colors.teal,
+                    //     shape: RoundedRectangleBorder(
+                    //       borderRadius: BorderRadius.circular(8),
+                    //     ),
+                    //   ),
+                    //   child: const Text(
+                    //     'Add Diagnosis',
+                    //     style: TextStyle(color: Colors.white),
+                    //   ),
+                    // ),
                     const SizedBox(width: 8),
-                    ElevatedButton(
+                    CustomButtonNew(
+                      width: 120,
+                      height: 40,
+                      title: 'Add link',
+                      isBackgroundPrimary: true,
                       onPressed: () {
                         showDialog(
                           context: context,
@@ -433,16 +447,7 @@ class ListContent extends StatelessWidget {
                           },
                         );
                       },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.teal,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      child: const Text(
-                        'Add link',
-                        style: TextStyle(color: Colors.white),
-                      ),
+                      isLoading: false,
                     ),
                   ],
                 ),

@@ -1,13 +1,19 @@
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sanar_proj/PATIENT/Login-Signup/Login-Signup/login.dart';
-import 'dart:io';
 import 'package:flutter_sanar_proj/PATIENT/Login-Signup/Login-Signup/login_signup.dart';
 import 'package:flutter_sanar_proj/PATIENT/Widgets/Constant_Widgets/CustomInputField.dart';
-import 'package:page_transition/page_transition.dart';
-import 'package:intl/intl.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:flutter_sanar_proj/constant.dart';
+import 'package:flutter_sanar_proj/core/widgets/custom_button.dart';
+import 'package:flutter_sanar_proj/core/widgets/custom_gradiant_icon_widget.dart';
 import 'package:http/http.dart' as http;
-import 'package:file_picker/file_picker.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
+import 'package:page_transition/page_transition.dart';
+
+import '../../../core/helper/app_helper.dart';
 
 // import 'medicalRegistration.dart';
 
@@ -33,6 +39,7 @@ class _PersonalRegistrationPageState extends State<PersonalRegistrationPage> {
   String? _selectedGender;
   final ImagePicker _picker = ImagePicker();
   bool _isSubmitting = false;
+  bool _isLoading = false;
 
   Future<void> _pickImage() async {
     final XFile? pickedFile =
@@ -64,6 +71,7 @@ class _PersonalRegistrationPageState extends State<PersonalRegistrationPage> {
 
     setState(() {
       _isSubmitting = true;
+      _isLoading = true;
     });
 
     const String apiUrl = 'http://67.205.166.136/api/users/';
@@ -123,6 +131,7 @@ class _PersonalRegistrationPageState extends State<PersonalRegistrationPage> {
     } finally {
       setState(() {
         _isSubmitting = false;
+        _isLoading = false;
       });
     }
   }
@@ -144,14 +153,9 @@ class _PersonalRegistrationPageState extends State<PersonalRegistrationPage> {
   }
 
   void _showSnackBar(String message, {bool success = false}) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          message,
-          style: TextStyle(color: success ? Colors.green : Colors.red),
-        ),
-      ),
-    );
+    success
+        ? AppHelper.successSnackBar(context: context, message: message)
+        : AppHelper.errorSnackBar(context: context, message: message);
   }
 
   @override
@@ -162,9 +166,8 @@ class _PersonalRegistrationPageState extends State<PersonalRegistrationPage> {
           backgroundColor: Colors.white,
           titleSpacing: 0,
           leading: IconButton(
-            icon: Icon(
-              Icons.arrow_back,
-              color: const Color(0xFF52A0AE), // Use the color #52A0AE
+            icon: const CustomGradiantIconWidget(
+              icon: Icons.arrow_back,
             ),
             onPressed: () {
               Navigator.pushReplacement(
@@ -203,14 +206,16 @@ class _PersonalRegistrationPageState extends State<PersonalRegistrationPage> {
                               ? FileImage(File(_profilePhoto!))
                               : null,
                       child: _profilePhoto == null || _profilePhoto!.isEmpty
-                          ? const Icon(Icons.camera_alt,
-                              size: 55, color: Color(0xFF52A0AE))
+                          ? const CustomGradiantIconWidget(
+                              icon: Icons.camera_alt,
+                              iconSize: 55,
+                            )
                           : null,
                     ),
                     FloatingActionButton(
                       onPressed: _pickImage,
                       mini: true,
-                      backgroundColor: Color(0xFF52A0AE),
+                      backgroundColor: Constant.primaryColor,
                       child: const Icon(Icons.edit, color: Colors.white),
                     ),
                   ],
@@ -225,7 +230,7 @@ class _PersonalRegistrationPageState extends State<PersonalRegistrationPage> {
                   inputDecoration: InputDecoration(
                     filled: true,
                     fillColor: Colors.teal.shade50,
-                    labelStyle: TextStyle(color: Colors.teal),
+                    labelStyle: const TextStyle(color: Colors.teal),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(15.0),
                       borderSide: BorderSide.none,
@@ -242,7 +247,7 @@ class _PersonalRegistrationPageState extends State<PersonalRegistrationPage> {
                   inputDecoration: InputDecoration(
                     filled: true,
                     fillColor: Colors.teal.shade50,
-                    labelStyle: TextStyle(color: Colors.teal),
+                    labelStyle: const TextStyle(color: Colors.teal),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(15.0),
                       borderSide: BorderSide.none,
@@ -259,7 +264,7 @@ class _PersonalRegistrationPageState extends State<PersonalRegistrationPage> {
                   inputDecoration: InputDecoration(
                     filled: true,
                     fillColor: Colors.teal.shade50,
-                    labelStyle: TextStyle(color: Colors.teal),
+                    labelStyle: const TextStyle(color: Colors.teal),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(15.0),
                       borderSide: BorderSide.none,
@@ -276,7 +281,7 @@ class _PersonalRegistrationPageState extends State<PersonalRegistrationPage> {
                   inputDecoration: InputDecoration(
                     filled: true,
                     fillColor: Colors.teal.shade50,
-                    labelStyle: TextStyle(color: Colors.teal),
+                    labelStyle: const TextStyle(color: Colors.teal),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(15.0),
                       borderSide: BorderSide.none,
@@ -293,7 +298,7 @@ class _PersonalRegistrationPageState extends State<PersonalRegistrationPage> {
                   inputDecoration: InputDecoration(
                     filled: true,
                     fillColor: Colors.teal.shade50,
-                    labelStyle: TextStyle(color: Colors.teal),
+                    labelStyle: const TextStyle(color: Colors.teal),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(15.0),
                       borderSide: BorderSide.none,
@@ -310,7 +315,7 @@ class _PersonalRegistrationPageState extends State<PersonalRegistrationPage> {
                   inputDecoration: InputDecoration(
                     filled: true,
                     fillColor: Colors.teal.shade50,
-                    labelStyle: TextStyle(color: Colors.teal),
+                    labelStyle: const TextStyle(color: Colors.teal),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(15.0),
                       borderSide: BorderSide.none,
@@ -327,7 +332,7 @@ class _PersonalRegistrationPageState extends State<PersonalRegistrationPage> {
                   inputDecoration: InputDecoration(
                     filled: true,
                     fillColor: Colors.teal.shade50,
-                    labelStyle: TextStyle(color: Colors.teal),
+                    labelStyle: const TextStyle(color: Colors.teal),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(15.0),
                       borderSide: BorderSide.none,
@@ -343,7 +348,7 @@ class _PersonalRegistrationPageState extends State<PersonalRegistrationPage> {
                   inputDecoration: InputDecoration(
                     filled: true,
                     fillColor: Colors.teal.shade50,
-                    labelStyle: TextStyle(color: Colors.teal),
+                    labelStyle: const TextStyle(color: Colors.teal),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(15.0),
                       borderSide: BorderSide.none,
@@ -367,8 +372,8 @@ class _PersonalRegistrationPageState extends State<PersonalRegistrationPage> {
                   decoration: InputDecoration(
                     labelText: 'Gender',
                     filled: true,
-                    fillColor: Colors.teal.shade50,
-                    labelStyle: TextStyle(color: Colors.teal),
+                    fillColor: Constant.secondaryColor.withValues(alpha: 0.2),
+                    labelStyle: const TextStyle(color: Constant.primaryColor),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(15.0),
                       borderSide: BorderSide.none,
@@ -378,21 +383,27 @@ class _PersonalRegistrationPageState extends State<PersonalRegistrationPage> {
                   ),
                 ),
                 const SizedBox(height: 30),
-                ElevatedButton(
+                CustomButtonNew(
+                  title: 'register',
+                  isLoading: _isLoading,
+                  isBackgroundPrimary: true,
                   onPressed: _submitDetails,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFF52A0AE),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 18, horizontal: 60),
-                  ),
-                  child: const Text(
-                    "Register",
-                    style: TextStyle(fontSize: 18, color: Colors.white),
-                  ),
                 ),
+                // ElevatedButton(
+                //   onPressed: _submitDetails,
+                //   style: ElevatedButton.styleFrom(
+                //     backgroundColor: const Color(0xFF52A0AE),
+                //     shape: RoundedRectangleBorder(
+                //       borderRadius: BorderRadius.circular(15),
+                //     ),
+                //     padding: const EdgeInsets.symmetric(
+                //         vertical: 18, horizontal: 60),
+                //   ),
+                //   child: const Text(
+                //    ,
+                //     style: TextStyle(fontSize: 18, color: Colors.white),
+                //   ),
+                // ),
               ],
             ),
           ),

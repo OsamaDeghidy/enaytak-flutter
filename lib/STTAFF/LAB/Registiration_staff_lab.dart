@@ -1,7 +1,11 @@
-import 'dart:io';
 import 'dart:convert';
-import 'package:flutter/material.dart';
+import 'dart:io';
+
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_sanar_proj/constant.dart';
+import 'package:flutter_sanar_proj/core/widgets/custom_gradiant_icon_widget.dart';
+import 'package:flutter_sanar_proj/core/widgets/custom_gradiant_text_widget.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -244,7 +248,7 @@ class _RegistirationStaffLabState extends State<RegistirationStaffLab> {
           '${widget.staffType} Registration',
           style: const TextStyle(color: Colors.white),
         ),
-        backgroundColor: Colors.teal,
+        backgroundColor: Constant.primaryColor,
         elevation: 4,
       ),
       body: SingleChildScrollView(
@@ -253,6 +257,7 @@ class _RegistirationStaffLabState extends State<RegistirationStaffLab> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildSectionCard(
+              icon: Icons.person,
               title: 'Personal Information',
               children: [
                 _buildDropdownField(
@@ -271,6 +276,7 @@ class _RegistirationStaffLabState extends State<RegistirationStaffLab> {
               ],
             ),
             _buildSectionCard(
+              icon: Icons.location_city,
               title: 'Additional Information',
               children: [
                 _buildTextField(
@@ -293,6 +299,7 @@ class _RegistirationStaffLabState extends State<RegistirationStaffLab> {
                   controller: _yearsOfExperienceController,
                   inputType: TextInputType.number, // Only allow numbers
                 ),
+                const SizedBox(height: 12),
                 _buildTextField(
                   label: 'Phone Number',
                   controller: _phoneNumberController,
@@ -307,9 +314,11 @@ class _RegistirationStaffLabState extends State<RegistirationStaffLab> {
               ],
             ),
             _buildSectionCard(
+              icon: Icons.person,
               title: 'Personal Information',
               children: [
                 _buildDropdownFieldd(
+                  icon: Icons.language,
                   label: 'Native Language',
                   value: selectedLanguage,
                   items: languages,
@@ -318,6 +327,7 @@ class _RegistirationStaffLabState extends State<RegistirationStaffLab> {
                 ),
                 const SizedBox(height: 12),
                 _buildDropdownFieldd(
+                  icon: Icons.flag,
                   label: 'Country',
                   value: selectedCountry,
                   items: countries,
@@ -325,6 +335,7 @@ class _RegistirationStaffLabState extends State<RegistirationStaffLab> {
                 ),
                 const SizedBox(height: 12),
                 _buildDropdownFieldd(
+                  icon: Icons.location_city,
                   label: 'City',
                   value: selectedCity,
                   items: cities,
@@ -333,9 +344,11 @@ class _RegistirationStaffLabState extends State<RegistirationStaffLab> {
               ],
             ),
             _buildSectionCard(
+              icon: Icons.school,
               title: 'Education',
               children: [
                 _buildDropdownFieldd(
+                  icon: Icons.school,
                   label: 'Degree',
                   value: selectedDegree,
                   items: degrees,
@@ -343,6 +356,7 @@ class _RegistirationStaffLabState extends State<RegistirationStaffLab> {
                 ),
                 const SizedBox(height: 12),
                 _buildDropdownFieldd(
+                  icon: Icons.medical_services,
                   label: 'Specialization',
                   value: selectedSpecialization,
                   items: specializations,
@@ -351,6 +365,7 @@ class _RegistirationStaffLabState extends State<RegistirationStaffLab> {
                 ),
                 const SizedBox(height: 12),
                 _buildDropdownFieldd(
+                  icon: Icons.work,
                   label: 'Classification',
                   value: selectedClassification,
                   items: classifications,
@@ -360,6 +375,7 @@ class _RegistirationStaffLabState extends State<RegistirationStaffLab> {
               ],
             ),
             _buildSectionCard(
+              icon: Icons.folder,
               title: 'Documents',
               children: [
                 _buildUploadButton(
@@ -380,7 +396,8 @@ class _RegistirationStaffLabState extends State<RegistirationStaffLab> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
                   ),
-                  backgroundColor: isSubmitting ? Colors.grey : Colors.teal,
+                  backgroundColor:
+                      isSubmitting ? Colors.grey : Constant.primaryColor,
                 ),
                 child: isSubmitting
                     ? const CircularProgressIndicator(color: Colors.white)
@@ -399,8 +416,11 @@ class _RegistirationStaffLabState extends State<RegistirationStaffLab> {
     );
   }
 
-  Widget _buildSectionCard(
-      {required String title, required List<Widget> children}) {
+  Widget _buildSectionCard({
+    required String title,
+    required List<Widget> children,
+    required IconData icon,
+  }) {
     return Card(
       margin: const EdgeInsets.only(bottom: 16.0),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -411,15 +431,15 @@ class _RegistirationStaffLabState extends State<RegistirationStaffLab> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              title,
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.teal,
-              ),
+            Row(
+              children: [
+                CustomGradiantIconWidget(icon: icon, iconSize: 24),
+                const SizedBox(width: 8),
+                CustomGradiantTextWidget(
+                    text: title, fontSize: 20, fontWeight: FontWeight.bold),
+              ],
             ),
-            const Divider(thickness: 1, color: Colors.teal),
+            const Divider(thickness: 1, color: Constant.primaryColor),
             ...children,
           ],
         ),
@@ -441,11 +461,20 @@ class _RegistirationStaffLabState extends State<RegistirationStaffLab> {
           borderRadius: BorderRadius.circular(10),
           borderSide: const BorderSide(color: Colors.teal, width: 1),
         ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: const BorderSide(color: Constant.primaryColor, width: 1),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: const BorderSide(color: Colors.red, width: 1),
+        ),
       ),
     );
   }
 
   Widget _buildDropdownFieldd({
+    required IconData icon,
     required String label,
     required String? value,
     required List<String> items,
@@ -455,9 +484,18 @@ class _RegistirationStaffLabState extends State<RegistirationStaffLab> {
       value: value,
       decoration: InputDecoration(
         labelText: label,
+        prefixIcon: CustomGradiantIconWidget(icon: icon),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: Colors.teal, width: 1),
+          borderSide: const BorderSide(color: Constant.primaryColor, width: 1),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: const BorderSide(color: Constant.primaryColor, width: 1),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: const BorderSide(color: Colors.red, width: 1),
         ),
       ),
       items: items
@@ -482,7 +520,7 @@ class _RegistirationStaffLabState extends State<RegistirationStaffLab> {
         labelText: label,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: Colors.teal, width: 1),
+          borderSide: const BorderSide(color: Constant.primaryColor, width: 1),
         ),
       ),
       items: items,
@@ -496,6 +534,14 @@ class _RegistirationStaffLabState extends State<RegistirationStaffLab> {
     required VoidCallback onPressed,
   }) {
     return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        foregroundColor: Colors.white,
+        backgroundColor: Constant.primaryColor,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+      ),
       onPressed: onPressed,
       child: Text(filePath == null ? label : '$label: $filePath'),
     );

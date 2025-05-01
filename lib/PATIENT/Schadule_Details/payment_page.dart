@@ -5,8 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_sanar_proj/PATIENT/Schadule_Details/book_appointment_service.dart';
 import 'package:flutter_sanar_proj/PATIENT/Widgets/Colors/colors.dart';
 import 'package:flutter_sanar_proj/PATIENT/Widgets/Constant_Widgets/custom_bottomNAVbar.dart';
+import 'package:flutter_sanar_proj/constant.dart';
+import 'package:flutter_sanar_proj/core/helper/app_helper.dart';
 import 'package:myfatoorah_flutter/MFUtils.dart';
 import 'package:myfatoorah_flutter/myfatoorah_flutter.dart';
+
+import '../../core/widgets/custom_button.dart';
 
 class PaymentPage extends StatefulWidget {
   const PaymentPage({
@@ -63,9 +67,11 @@ class _PaymentPageState extends State<PaymentPage> {
 
     // TODO, don't forget to init the MyFatoorah Plugin with the following line
     await MFSDK.init(
-      'KjwqRonKEOlqhT4fMSWD_OoENKksgyue3BctG5uOCqfj3-5coco4PPcWnrXoGNFoNcEVAVyCw5iBgHDkp8TkY_JwDlckk6VpyOMZy_CMe7hFmCMtx8126Le9_4YO5mr32fLdl8aLYxjtcoQuXNxYQDJ1tAJ9rQUUwnCWnfTVmE2HSCzgli2-QsGoPfS-uynwEwEHHJDyWVStc31YevUnZ6lm-Iu8yPsQIrlG5mezIKOQGWZnzq9hiWeP69LIaBM_D93llhZjGv0TFSyGWkx3Ea40KMWwXkEIJea5Jt9hzYQINfzy0sqQGrJdzQUZfh_V49gOAwvDMvWBFOH_yNStcVksPToO7miMjZfhYDsCZfbjP6aHVhQ8N2JBcpDjRnPeJdboeZLfHlDB-2TeClohu1qMQkxWpdF1YvCq7MR7-tGQUmV6yWw1vT6IA32eOyduQoDZXjKgt05dTYXAUVpUIMj3NidLp3okfPT0lZ7ptMaBYyB57aBhmB1JtAZeqrN6TdAQMHURj4DFzfOpuLoOOnAlQmUPb8bekcWG2BL1HWnXs3p7jVsq5a2W3ufMqV_PWpOufVjTC-8zVV3uHk5uG3wqmHmxA4pRNle2I1_oxc9-JlW302D_jGkBxQHK1wltUevHyqgDf335XCK8jbqJwkCcOp6NZUhXzeYrMm8ulwIoENhUdppydKGIYQu9xYw3WJ6Y12evphOvdtUot6CF3kDM7UOnxL9Z1222StMXb9g-09md',
+      // 'KjwqRonKEOlqhT4fMSWD_OoENKksgyue3BctG5uOCqfj3-5coco4PPcWnrXoGNFoNcEVAVyCw5iBgHDkp8TkY_JwDlckk6VpyOMZy_CMe7hFmCMtx8126Le9_4YO5mr32fLdl8aLYxjtcoQuXNxYQDJ1tAJ9rQUUwnCWnfTVmE2HSCzgli2-QsGoPfS-uynwEwEHHJDyWVStc31YevUnZ6lm-Iu8yPsQIrlG5mezIKOQGWZnzq9hiWeP69LIaBM_D93llhZjGv0TFSyGWkx3Ea40KMWwXkEIJea5Jt9hzYQINfzy0sqQGrJdzQUZfh_V49gOAwvDMvWBFOH_yNStcVksPToO7miMjZfhYDsCZfbjP6aHVhQ8N2JBcpDjRnPeJdboeZLfHlDB-2TeClohu1qMQkxWpdF1YvCq7MR7-tGQUmV6yWw1vT6IA32eOyduQoDZXjKgt05dTYXAUVpUIMj3NidLp3okfPT0lZ7ptMaBYyB57aBhmB1JtAZeqrN6TdAQMHURj4DFzfOpuLoOOnAlQmUPb8bekcWG2BL1HWnXs3p7jVsq5a2W3ufMqV_PWpOufVjTC-8zVV3uHk5uG3wqmHmxA4pRNle2I1_oxc9-JlW302D_jGkBxQHK1wltUevHyqgDf335XCK8jbqJwkCcOp6NZUhXzeYrMm8ulwIoENhUdppydKGIYQu9xYw3WJ6Y12evphOvdtUot6CF3kDM7UOnxL9Z1222StMXb9g-09md',
+      "rLtt6JWvbUHDDhsZnfpAhpYk4dxYDQkbcPTyGaKp2TYqQgG7FGZ5Th_WD53Oq8Ebz6A53njUoo1w3pjU1D4vs_ZMqFiz_j0urb_BH9Oq9VZoKFoJEDAbRZepGcQanImyYrry7Kt6MnMdgfG5jn4HngWoRdKduNNyP4kzcp3mRv7x00ahkm9LAK7ZRieg7k1PDAnBIOG3EyVSJ5kK4WLMvYr7sCwHbHcu4A5WwelxYK0GMJy37bNAarSJDFQsJ2ZvJjvMDmfWwDVFEVe_5tOomfVNt6bOg9mexbGjMrnHBnKnZR1vQbBtQieDlQepzTZMuQrSuKn-t5XZM7V6fCW7oP-uXGX-sMOajeX65JOf6XVpk29DP6ro8WTAflCDANC193yof8-f5_EYY-3hXhJj7RBXmizDpneEQDSaSz5sFk0sV5qPcARJ9zGG73vuGFyenjPPmtDtXtpx35A-BVcOSBYVIWe9kndG3nclfefjKEuZ3m4jL9Gg1h2JBvmXSMYiZtp9MR5I6pvbvylU_PP5xJFSjVTIz7IQSjcVGO41npnwIxRXNRxFOdIUHn0tjQ-7LwvEcTXyPsHXcMD8WtgBh-wxR8aKX7WPSsT1O8d8reb2aR7K3rkV3K82K_0OgawImEpwSvp9MNKynEAJQS6ZHe_J_l77652xwPNxMRTMASk1ZsJL",
+
       MFCountry.SAUDIARABIA,
-      MFEnvironment.LIVE,
+      MFEnvironment.TEST,
     );
     // (Optional) un comment the following lines if you want to set up properties of AppBar.
     // MFSDK.setUpActionBar(
@@ -130,12 +136,8 @@ class _PaymentPageState extends State<PaymentPage> {
         log(value, 'execute payment in then ');
 
         await callAppointment(); // ✅ Call appointment booking only on successful payment
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Payment successful'),
-            backgroundColor: Colors.red,
-          ),
-        );
+        AppHelper.successSnackBar(
+            context: context, message: "Payment successful");
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const MainScreen()),
@@ -143,12 +145,8 @@ class _PaymentPageState extends State<PaymentPage> {
       });
     } catch (error) {
       log('Payment Failed ❌: $error', 'execute payment in cathc');
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Payment failed. Please try again.'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      AppHelper.errorSnackBar(
+          context: context, message: "Payment failed. Please try again.");
     }
   }
 
@@ -164,27 +162,32 @@ class _PaymentPageState extends State<PaymentPage> {
         userId: widget.userId!,
         doctorID: widget.doctorID!,
         onSuccess: () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Appointment created successfully'),
-            ),
-          );
+          // ScaffoldMessenger.of(context).showSnackBar(
+          //   const SnackBar(
+          //     content: Text(),
+          //   ),
+          // );
+          AppHelper.successSnackBar(
+              context: context, message: 'Appointment created successfully');
         },
         onFailure: (String message) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(message),
-            ),
-          );
+          AppHelper.errorSnackBar(context: context, message: message);
+          // ScaffoldMessenger.of(context).showSnackBar(
+          //   SnackBar(
+          //     content: Text(message),
+          //   ),
+          // );
         },
       );
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Payment failed. Please try again.'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      AppHelper.errorSnackBar(
+          context: context, message: 'Payment failed. Please try again.');
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   const SnackBar(
+      //     content: Text('Payment failed. Please try again.'),
+      //     backgroundColor: Colors.red,
+      //   ),
+      // );
     }
   }
 
@@ -338,7 +341,7 @@ class _PaymentPageState extends State<PaymentPage> {
       merchantId: null,
       merchantName: "Test Vendor",
       countryCode: MFCountry.SAUDIARABIA,
-      currencyIso: MFCurrencyISO.UAE_AED,
+      currencyIso: MFCurrencyISO.SAUDIARABIA_SAR,
     );
 
     await mfGooglePayButton
@@ -364,6 +367,7 @@ class _PaymentPageState extends State<PaymentPage> {
         'service price ${widget.servicePrice} doctor id ${widget.doctorID} , user id ${widget.userId} , selected date ${widget.selectedDate}');
     return Scaffold(
       resizeToAvoidBottomInset: false,
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text("Select payment method", style: textStyle()),
         //   title: const Text('Plugin example app'),
@@ -399,7 +403,12 @@ class _PaymentPageState extends State<PaymentPage> {
       bottomNavigationBar: selectedPaymentMethodIndex != -1
           ? Padding(
               padding: const EdgeInsets.all(16),
-              child: btn("Execute Payment", executePayment),
+              child: CustomButtonNew(
+                title: "Execute Payment",
+                isLoading: false,
+                isBackgroundPrimary: true,
+                onPressed: executePayment,
+              ),
             )
           : null,
     );
@@ -448,7 +457,7 @@ class _PaymentPageState extends State<PaymentPage> {
           const EdgeInsetsDirectional.symmetric(horizontal: 8, vertical: 8),
       decoration: isSelected[index]
           ? BoxDecoration(
-              border: Border.all(color: primaryColor, width: 2),
+              border: Border.all(color: Constant.primaryColor, width: 2),
               borderRadius: BorderRadius.circular(8))
           : BoxDecoration(
               border:
@@ -476,7 +485,7 @@ class _PaymentPageState extends State<PaymentPage> {
               height: 24.0,
               width: 24.0,
               child: Checkbox(
-                checkColor: primaryColor,
+                checkColor: Constant.primaryColor,
                 activeColor: Colors.white,
                 value: isSelected[index],
                 onChanged: (bool? value) {

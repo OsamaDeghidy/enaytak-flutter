@@ -1,9 +1,14 @@
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:flutter_sanar_proj/constant.dart';
+import 'package:flutter_sanar_proj/core/widgets/custom_button.dart';
 import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../core/helper/app_helper.dart';
 
 class StaffAddservice extends StatefulWidget {
   const StaffAddservice({super.key});
@@ -26,7 +31,7 @@ class _StaffAddserviceState extends State<StaffAddservice> {
   String? selectedCategoryId;
   String? selectedSubcategory;
   String? selectedSubcategoryId;
-
+  bool _isLoading = false;
   Future<void> fetchCategories() async {
     try {
       final response = await http.get(
@@ -103,7 +108,9 @@ class _StaffAddserviceState extends State<StaffAddservice> {
 
   Future<void> postService() async {
     if (!_formKey.currentState!.validate()) return;
-
+    setState(() {
+      _isLoading = true;
+    });
     try {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('access');
@@ -146,13 +153,8 @@ class _StaffAddserviceState extends State<StaffAddservice> {
       final responseString = await response.stream.bytesToString();
 
       if (response.statusCode == 201) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text(
-            'Service posted successfully!',
-            style: TextStyle(color: Colors.green),
-          )),
-        );
+        AppHelper.successSnackBar(
+            context: context, message: "Service posted successfully!");
         _formKey.currentState!.reset();
         setState(() {
           _pickedImage = null;
@@ -162,10 +164,11 @@ class _StaffAddserviceState extends State<StaffAddservice> {
       }
     } catch (error) {
       print('Error: $error');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $error')),
-      );
+      AppHelper.errorSnackBar(context: context, message: "Error: $error");
     }
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   @override
@@ -281,8 +284,12 @@ class _StaffAddserviceState extends State<StaffAddservice> {
 
                 // Category dropdown
                 categoryList.isEmpty
-                    ? const CircularProgressIndicator(
-                        color: Colors.teal,
+                    ? const Padding(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 190, vertical: 50),
+                        child: CircularProgressIndicator(
+                          color: Constant.primaryColor,
+                        ),
                       )
                     : Card(
                         color: Colors.white,
@@ -394,18 +401,23 @@ class _StaffAddserviceState extends State<StaffAddservice> {
                 ),
 
                 // Submit Button
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.teal,
-                    padding: const EdgeInsets.symmetric(vertical: 15),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                  ),
-                  onPressed: postService,
-                  child: const Text('Submit Service',
-                      style: TextStyle(fontSize: 18, color: Colors.white)),
-                ),
+                CustomButtonNew(
+                    title: 'Submit Service',
+                    isLoading: _isLoading,
+                    isBackgroundPrimary: true,
+                    onPressed: postService),
+                // ElevatedButton(
+                //   style: ElevatedButton.styleFrom(
+                //     backgroundColor: Colors.teal,
+                //     padding: const EdgeInsets.symmetric(vertical: 15),
+                //     shape: RoundedRectangleBorder(
+                //       borderRadius: BorderRadius.circular(15),
+                //     ),
+                //   ),
+                //   onPressed: postService,
+                //   child: const Text('Submit Service',
+                //       style: TextStyle(fontSize: 18, color: Colors.white)),
+                // ),
               ],
             ),
           ),

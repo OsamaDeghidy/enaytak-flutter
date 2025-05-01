@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_sanar_proj/constant.dart';
 import 'package:intl/intl.dart';
 
 class ScheduleWidgetDoctor extends StatelessWidget {
@@ -22,10 +23,10 @@ class ScheduleWidgetDoctor extends StatelessWidget {
       builder: (BuildContext context, Widget? child) {
         return Theme(
           data: ThemeData.light().copyWith(
-            primaryColor:
-                const Color.fromARGB(255, 3, 190, 150), // Header color
+            primaryColor: Constant.primaryColor, // Header color
             colorScheme: const ColorScheme.light(
-                primary: Color.fromARGB(255, 3, 190, 150)),
+              primary: Constant.primaryColor,
+            ),
           ),
           child: child!,
         );

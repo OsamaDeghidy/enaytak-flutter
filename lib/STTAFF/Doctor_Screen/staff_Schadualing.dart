@@ -2,11 +2,13 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_sanar_proj/PATIENT/Widgets/Constant_Widgets/custom_AppBar.dart';
-import 'package:flutter_sanar_proj/STTAFF/Doctor_Screen/staff_SubmitedScadualing.dart';
-import 'package:flutter_sanar_proj/STTAFF/Widgets/CustomButton.dart';
+import 'package:flutter_sanar_proj/core/helper/app_helper.dart';
+import 'package:flutter_sanar_proj/core/widgets/custom_button.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../constant.dart';
+import 'staff_SubmitedScadualing.dart';
 import 'widgets/day_schadule_doctor.dart';
 
 class StaffScheduleScreen extends StatefulWidget {
@@ -39,7 +41,7 @@ class _StaffScheduleScreenState extends State<StaffScheduleScreen>
     'sunday': [],
   };
   bool isLoading = false;
-
+  bool isSubmitting = false;
   @override
   void initState() {
     super.initState();
@@ -54,6 +56,9 @@ class _StaffScheduleScreenState extends State<StaffScheduleScreen>
 
   Future<void> _submitSchedule(
       String day, String startTime, String endTime) async {
+    setState(() {
+      isSubmitting = true;
+    });
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('access') ?? '';
     final userId = prefs.getInt('userId') ?? 0;
@@ -81,20 +86,23 @@ class _StaffScheduleScreenState extends State<StaffScheduleScreen>
       final response = await http.post(url, headers: headers, body: body);
 
       if (response.statusCode == 201) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Schedule submitted successfully!')),
-        );
+        AppHelper.successSnackBar(
+            context: context, message: 'Schedule submitted successfully!');
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   const SnackBar(content: Text()),
+        // );
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text('Failed to submit schedule. Please try again.')),
-        );
+        AppHelper.errorSnackBar(
+            context: context,
+            message: 'Failed to submit schedule. Please try again.');
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('An error occurred. Please try again.')),
-      );
+      AppHelper.errorSnackBar(
+          context: context, message: 'An error occurred. Please try again.');
     }
+    setState(() {
+      isSubmitting = false;
+    });
   }
 
   @override
@@ -111,7 +119,7 @@ class _StaffScheduleScreenState extends State<StaffScheduleScreen>
               margin: const EdgeInsets.symmetric(horizontal: 10),
               padding: const EdgeInsets.symmetric(vertical: 6),
               decoration: BoxDecoration(
-                color: Colors.grey[300],
+                color: Colors.grey[100],
                 borderRadius: BorderRadius.circular(50),
               ),
               child: TabBar(
@@ -122,7 +130,10 @@ class _StaffScheduleScreenState extends State<StaffScheduleScreen>
                 labelStyle:
                     const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 indicator: BoxDecoration(
-                  color: Colors.teal[600],
+                  gradient: const LinearGradient(
+                      colors: Constant.gradientPrimaryColors,
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter),
                   borderRadius: BorderRadius.circular(50),
                 ),
                 tabs: daysOfWeek
@@ -145,6 +156,7 @@ class _StaffScheduleScreenState extends State<StaffScheduleScreen>
                 var daySchedules = schedulesByDay[day] ?? [];
                 return DayScheduleDoctor(
                   day: day,
+                  isSubmitting: isSubmitting,
                   schedules: daySchedules.isEmpty
                       ? [
                           {
@@ -160,10 +172,11 @@ class _StaffScheduleScreenState extends State<StaffScheduleScreen>
             ),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 16.0),
-            child: CustomButton(
-              text: "View Submitted Schedules", // Button text
-              color: Colors.teal[600],
+            padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 36),
+            child: CustomButtonNew(
+              title: "View Submitted Schedules",
+              isLoading: isLoading,
+              isBackgroundPrimary: true,
               onPressed: () {
                 Navigator.push(
                   context,
@@ -172,9 +185,21 @@ class _StaffScheduleScreenState extends State<StaffScheduleScreen>
                           const StaffScheduleSubmited()), // Navigate to the submitted scheduling screen
                 );
               },
-              height: 60,
-              width: 250,
             ),
+            // child: CustomButton(
+            //   text: "View Submitted Schedules", // Button text
+            //   color: Colors.teal[600],
+            //   onPressed: () {
+            //     Navigator.push(
+            //       context,
+            //       MaterialPageRoute(
+            //           builder: (context) =>
+            //               const StaffScheduleSubmited()), // Navigate to the submitted scheduling screen
+            //     );
+            //   },
+            //   height: 60,
+            //   width: 250,
+            // ),
           ),
         ],
       ),

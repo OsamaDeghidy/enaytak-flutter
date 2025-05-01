@@ -1,10 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_sanar_proj/PATIENT/Widgets/Constant_Widgets/custom_AppBar.dart';
+import 'package:flutter_sanar_proj/constant.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class RequestItem {
   final String title;
@@ -25,6 +27,8 @@ class RequestItem {
 }
 
 class StaffRequestScreen extends StatefulWidget {
+  const StaffRequestScreen({super.key});
+
   @override
   _StaffRequestScreenState createState() => _StaffRequestScreenState();
 }
@@ -265,7 +269,7 @@ class _StaffRequestScreenState extends State<StaffRequestScreen> {
       body: isLoading
           ? const Center(
               child: CircularProgressIndicator(
-              color: Colors.teal,
+              color: Constant.primaryColor,
             ))
           : userRequests.isEmpty
               ? const Center(child: Text('No appointments found'))

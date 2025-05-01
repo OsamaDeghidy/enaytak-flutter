@@ -6,6 +6,8 @@ import 'package:flutter_sanar_proj/constant.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../core/widgets/custom_gradiant_text_widget.dart';
+
 class DoctorDetailsServiceScreen extends StatelessWidget {
   final Map<String, dynamic> doctor;
   final String servicePrice;
@@ -98,11 +100,10 @@ class DoctorDetailsServiceScreen extends StatelessWidget {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
-                                  doctor['name'] ?? 'Unknown Doctor',
-                                  style: const TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold),
+                                CustomGradiantTextWidget(
+                                  text: doctor['name'] ?? 'Unknown Doctor',
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
                                 ),
                                 const SizedBox(height: 8),
                                 Text(
@@ -244,9 +245,10 @@ class DoctorDetailsServiceScreen extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            title,
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          CustomGradiantTextWidget(
+            text: title,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
           ),
           const Spacer(),
           Text(

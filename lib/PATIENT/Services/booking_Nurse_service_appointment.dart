@@ -1,9 +1,13 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_sanar_proj/PATIENT/Widgets/Constant_Widgets/custom_bottomNAVbar.dart';
-import 'package:intl/intl.dart';
+import 'package:flutter_sanar_proj/constant.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../core/widgets/custom_date_selector_card.dart';
 
 class booking_Nurse_service_appointment extends StatefulWidget {
   const booking_Nurse_service_appointment({super.key});
@@ -207,7 +211,7 @@ class _booking_Nurse_service_appointmentState
           );
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => MainScreen()),
+            MaterialPageRoute(builder: (context) => const MainScreen()),
           );
         } else {
           final responseBody = json.decode(response.body);
@@ -217,7 +221,7 @@ class _booking_Nurse_service_appointmentState
               'Another user booked this appointment. Please select another time.';
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('$errorMessage'),
+              content: Text(errorMessage),
               backgroundColor: Colors.red,
             ),
           );
@@ -274,114 +278,138 @@ class _booking_Nurse_service_appointmentState
                     color: Colors.black),
               ),
               const SizedBox(height: 10),
-              GestureDetector(
-                onTap: () async {
-                  final DateTime? picked = await showDatePicker(
-                    context: context,
-                    initialDate: selectedDate ?? DateTime.now(),
-                    firstDate: DateTime.now(),
-                    lastDate: DateTime.now().add(const Duration(days: 30)),
-                  );
-                  if (picked != null && picked != selectedDate) {
-                    _onDateSelected(picked); // Call the date selected method
-                  }
+              // GestureDetector(
+              //   onTap: () async {
+              //     final DateTime? picked = await showDatePicker(
+              //       context: context,
+              //       initialDate: selectedDate ?? DateTime.now(),
+              //       firstDate: DateTime.now(),
+              //       lastDate: DateTime.now().add(const Duration(days: 30)),
+              //     );
+              //     if (picked != null && picked != selectedDate) {
+              //       _onDateSelected(picked); // Call the date selected method
+              //     }
+              //   },
+              //   child: Card(
+              //     elevation: 5,
+              //     color: selectedDate == null
+              //         ? Colors.grey[300]
+              //         : Colors.teal[100],
+              //     shape: RoundedRectangleBorder(
+              //       borderRadius: BorderRadius.circular(15),
+              //     ),
+              //     child: Padding(
+              //       padding: const EdgeInsets.symmetric(vertical: 16.0),
+              //       child: Center(
+              //         child: Text(
+              //           selectedDate == null
+              //               ? 'Select Date'
+              //               : DateFormat('yMMMd').format(selectedDate!),
+              //           style: TextStyle(
+              //             color: selectedDate == null
+              //                 ? Colors.black
+              //                 : Colors.teal[800],
+              //             fontSize: 18,
+              //             fontWeight: FontWeight.w600,
+              //           ),
+              //         ),
+              //       ),
+              //     ),
+              //   ),
+              // ),
+              CustomDateSelectorCard(
+                selectedDate: selectedDate,
+                onDateSelected: (newDate) {
+                  setState(() {
+                    selectedDate = newDate;
+                    selectedTime = null;
+                  });
+                  _onDateSelected(newDate); // your logic
                 },
-                child: Card(
-                  elevation: 5,
-                  color: selectedDate == null
-                      ? Colors.grey[300]
-                      : Colors.teal[100],
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 16.0),
-                    child: Center(
-                      child: Text(
-                        selectedDate == null
-                            ? 'Select Date'
-                            : DateFormat('yMMMd').format(selectedDate!),
-                        style: TextStyle(
-                          color: selectedDate == null
-                              ? Colors.black
-                              : Colors.teal[800],
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
               ),
               const SizedBox(height: 20),
-              const Text(
-                "Select Appointment Time",
-                style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black),
-              ),
-              const SizedBox(height: 10),
+              // const Text(
+              //   "Select Appointment Time",
+              //   style: TextStyle(
+              //       fontSize: 22,
+              //       fontWeight: FontWeight.w600,
+              //       color: Colors.black),
+              // ),
+              // const SizedBox(height: 10),
               // Display generated time slots
-              GridView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 4,
-                  crossAxisSpacing: 12,
-                  mainAxisSpacing: 12,
-                ),
-                itemCount: timeSlots.length,
-                itemBuilder: (context, index) {
-                  final slot = timeSlots[index];
-                  return GestureDetector(
-                    onTap: () => _onTimeSelected(slot), // Select the time slot
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 300),
-                      decoration: BoxDecoration(
-                        color: selectedTime == slot
-                            ? Colors.teal
-                            : Colors.grey[300],
-                        borderRadius: BorderRadius.circular(15),
-                        boxShadow: [
-                          if (selectedTime == slot)
-                            BoxShadow(
-                              color: Colors.teal.withOpacity(0.4),
-                              spreadRadius: 3,
-                              blurRadius: 6,
-                            )
-                        ],
+              timeSlots.isEmpty
+                  ? const Center(
+                      child: Text(
+                        'No Available Times For This Date',
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600),
                       ),
-                      child: Center(
-                        child: Text(
-                          slot.format(context), // Format the time slot
-                          style: TextStyle(
-                            color: selectedTime == slot
-                                ? Colors.white
-                                : Colors.black,
-                            fontWeight: FontWeight.w600,
+                    )
+                  : GridView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 4,
+                        crossAxisSpacing: 12,
+                        mainAxisSpacing: 12,
+                      ),
+                      itemCount: timeSlots.length,
+                      itemBuilder: (context, index) {
+                        final slot = timeSlots[index];
+                        return GestureDetector(
+                          onTap: () =>
+                              _onTimeSelected(slot), // Select the time slot
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 300),
+                            decoration: BoxDecoration(
+                              color: selectedTime == slot
+                                  ? Colors.teal
+                                  : Colors.grey[300],
+                              borderRadius: BorderRadius.circular(15),
+                              boxShadow: [
+                                if (selectedTime == slot)
+                                  BoxShadow(
+                                    color: Constant.primaryColor
+                                        .withValues(alpha: 0.4),
+                                    spreadRadius: 3,
+                                    blurRadius: 6,
+                                  )
+                              ],
+                            ),
+                            child: Center(
+                              child: Text(
+                                slot.format(context), // Format the time slot
+                                style: TextStyle(
+                                  color: selectedTime == slot
+                                      ? Colors.white
+                                      : Colors.black,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
                           ),
-                        ),
-                      ),
+                        );
+                      },
                     ),
-                  );
-                },
-              ),
               const SizedBox(height: 40),
-              ElevatedButton(
-                onPressed: _onBookAppointment,
-                style: ElevatedButton.styleFrom(
-                  minimumSize: const Size(double.infinity, 50),
-                  backgroundColor: Colors.teal,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15),
+              if (selectedDate != null && selectedTime != null)
+                ElevatedButton(
+                  onPressed: _onBookAppointment,
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: const Size(double.infinity, 50),
+                    backgroundColor: Colors.teal,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                  ),
+                  child: const Text(
+                    'Book Appointment',
+                    style: TextStyle(fontSize: 18, color: Colors.white),
                   ),
                 ),
-                child: const Text(
-                  'Book Appointment',
-                  style: TextStyle(fontSize: 18, color: Colors.white),
-                ),
-              ),
             ],
           ),
         ),

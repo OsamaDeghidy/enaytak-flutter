@@ -2,14 +2,18 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_sanar_proj/PATIENT/Map_Service/GoogleMapScreen.dart';
-import 'package:flutter_sanar_proj/PATIENT/StaffDetails/doctor_details.dart';
-import 'package:flutter_sanar_proj/PATIENT/StaffDetails/nurse_details.dart';
-import 'package:flutter_sanar_proj/PATIENT/Staff_List/DoctorListScreen.dart';
-import 'package:flutter_sanar_proj/PATIENT/Staff_List/NurseListScreen.dart';
+import 'package:flutter_sanar_proj/PATIENT/Screens/call_services/all_services.dart';
+import 'package:flutter_sanar_proj/PATIENT/Screens/call_services/call_services.dart';
+import 'package:flutter_sanar_proj/PATIENT/Services/ServiceDetailScreen.dart';
 import 'package:flutter_sanar_proj/PATIENT/Widgets/Constant_Widgets/custom_AppBar.dart';
+import 'package:flutter_sanar_proj/constant.dart';
+import 'package:flutter_sanar_proj/core/widgets/custom_gradiant_icon_widget.dart';
+import 'package:flutter_sanar_proj/core/widgets/custom_gradiant_text_widget.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
+
+import '../../core/widgets/custom_netowrk_iamge.dart';
 
 List<Map<String, dynamic>> serviceIcons = [
   {'id': 1, 'icon': Icons.local_hospital, 'name': 'Home Visit Doctor'},
@@ -30,13 +34,14 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  late Future<List<List<Map<String, dynamic>>>> _fetchDoctorsAndNurses;
-
+  // late Future<List<List<Map<String, dynamic>>>> _fetchDoctorsAndNurses;
+  late Future<AllServices> _servicesFuture;
   @override
   void initState() {
     super.initState();
     _printServiceId();
-    _fetchDoctorsAndNurses = _fetchDoctorsAndNursesInParallel();
+    // _fetchDoctorsAndNurses = _fetchDoctorsAndNursesInParallel();
+    _servicesFuture = ApiService.fetchAllServices();
   }
 
   Future<void> _printServiceId() async {
@@ -257,10 +262,10 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  Future<List<List<Map<String, dynamic>>>>
-      _fetchDoctorsAndNursesInParallel() async {
-    return await Future.wait([fetchDoctors(), fetchNurses()]);
-  }
+  // Future<List<List<Map<String, dynamic>>>>
+  //     _fetchDoctorsAndNursesInParallel() async {
+  //   return await Future.wait([fetchDoctors(), fetchNurses()]);
+  // }
 
   Future<void> saveDoctorId(int doctorId) async {
     final prefs = await SharedPreferences.getInstance();
@@ -290,14 +295,10 @@ class _HomePageState extends State<HomePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Homecare Services',
-                style: TextStyle(
+              const CustomGradiantTextWidget(
+                  text: 'Homecare Services',
                   fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-              ),
+                  fontWeight: FontWeight.bold),
               const SizedBox(height: 16),
               FutureBuilder<List<Map<String, dynamic>>>(
                 future: fetchServices(),
@@ -316,10 +317,10 @@ class _HomePageState extends State<HomePage> {
                   return GridView.builder(
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
+                      crossAxisCount: 3,
                       mainAxisSpacing: 14,
                       crossAxisSpacing: 14,
-                      mainAxisExtent: 80,
+                      mainAxisExtent: 120,
                     ),
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
@@ -352,22 +353,20 @@ class _HomePageState extends State<HomePage> {
                           ),
                           padding: const EdgeInsetsDirectional.symmetric(
                               horizontal: 20, vertical: 12),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(
-                                _getServiceIcon(service['id']),
-                                size: 36,
-                                color: const Color(0xFF0782BA),
-                              ),
-                              const SizedBox(width: 12),
+                              CustomGradiantIconWidget(
+                                  icon: _getServiceIcon(service['id']),
+                                  iconSize: 36),
+                              const SizedBox(height: 12),
                               Text(
                                 service['name'],
                                 textAlign: TextAlign.center,
                                 style: const TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.black87,
+                                  color: Colors.grey,
                                 ),
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
@@ -381,271 +380,326 @@ class _HomePageState extends State<HomePage> {
                 },
               ),
               const SizedBox(height: 32),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    'Top-Rated Doctors',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const DoctorListScreen(),
+
+              const CustomGradiantTextWidget(
+                  text: 'All Services',
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold),
+              const SizedBox(height: 16),
+              FutureBuilder<AllServices>(
+                future: _servicesFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return _buildServiceShimmerEffect();
+                  } else if (snapshot.hasError) {
+                    return Center(child: Text("Error: ${snapshot.error}"));
+                  } else if (!snapshot.hasData ||
+                      snapshot.data!.results!.isEmpty) {
+                    return const Center(child: Text("No services available"));
+                  }
+
+                  final services = snapshot.data!.results!;
+                  return ListView.builder(
+                    itemCount: services.length,
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    padding: EdgeInsets.zero,
+                    itemBuilder: (context, index) {
+                      final service = services[index];
+                      return InkWell(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ServiceDetailScreen(
+                                serviceId: service.id ?? 0,
+                              ),
+                            ),
+                          );
+                        },
+                        child: Container(
+                          margin: const EdgeInsetsDirectional.only(bottom: 16),
+                          padding: const EdgeInsetsDirectional.symmetric(
+                              horizontal: 4, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withValues(alpha: .2),
+                                blurRadius: 5,
+                                spreadRadius: 2,
+                              ),
+                            ],
+                          ),
+                          child: ListTile(
+                              title: Text(
+                                service.name ?? "Unnamed Service",
+                                style: const TextStyle(
+                                    color: Constant.primaryColor,
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 16),
+                              ),
+                              subtitle: Text(
+                                service.description ?? "No description",
+                                style: const TextStyle(
+                                    color: Constant.hintColor,
+                                    fontWeight: FontWeight.w400),
+                              ),
+                              trailing: CustomGradiantTextWidget(
+                                  text:
+                                      " ${service.price ?? '0'} ${Constant.currency}",
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold),
+                              leading: ClipRRect(
+                                borderRadius: BorderRadius.circular(12),
+                                child: CustomNetworkImage(
+                                  imageUrl: service.image ?? '',
+                                  width: 70,
+                                  height: 70,
+                                  fit: BoxFit.cover,
+                                ),
+                              )),
                         ),
                       );
                     },
-                    child: const Text(
-                      'See All',
-                      style: TextStyle(
-                        color: Colors.blue,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              FutureBuilder<List<List<Map<String, dynamic>>>>(
-                future: _fetchDoctorsAndNurses,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return _buildDoctorShimmerEffect();
-                  } else if (snapshot.hasError) {
-                    return const Center(
-                        child: Text('Failed to load data',
-                            style: TextStyle(color: Colors.red)));
-                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return const Center(child: Text('No data available'));
-                  }
-
-                  final doctors = snapshot.data![0];
-                  final nurses = snapshot.data![1];
-
-                  return Column(
-                    children: [
-                      SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
-                          children: doctors.map((doctor) {
-                            return GestureDetector(
-                              onTap: () async {
-                                await saveDoctorId(doctor['id']);
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        DoctorDetailsScreen(doctor: doctor),
-                                  ),
-                                );
-                              },
-                              child: Container(
-                                margin: const EdgeInsets.only(right: 16),
-                                width: 150,
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(12),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.grey.withOpacity(0.2),
-                                      blurRadius: 5,
-                                      spreadRadius: 2,
-                                    ),
-                                  ],
-                                ),
-                                padding: const EdgeInsets.all(12),
-                                child: Column(
-                                  children: [
-                                    ClipRRect(
-                                      borderRadius: BorderRadius.circular(12),
-                                      child: Image.network(
-                                        doctor['photo'],
-                                        height: 90,
-                                        width: 90,
-                                        fit: BoxFit.cover,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 8),
-                                    Text(
-                                      doctor['name'],
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 8),
-                                    Row(
-                                      children: [
-                                        const Icon(
-                                          Icons.star,
-                                          color: Colors.amber,
-                                          size: 16,
-                                        ),
-                                        const SizedBox(width: 4),
-                                        Text(
-                                          doctor['rating'].toString(),
-                                          style: const TextStyle(
-                                            color: Colors.grey,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            );
-                          }).toList(),
-                        ),
-                      ),
-                      const SizedBox(height: 32),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text(
-                            'Top-Rated Nurses',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                            ),
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const NurseListScreen(),
-                                ),
-                              );
-                            },
-                            child: const Text(
-                              'See All',
-                              style: TextStyle(
-                                color: Colors.blue,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      SizedBox(
-                        height: 180,
-                        child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: nurses.length,
-                          itemBuilder: (context, index) {
-                            final nurse = nurses[index];
-                            return GestureDetector(
-                              onTap: () async {
-                                await saveNurseId(nurse['id']);
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        NurseDetailsScreen(nurse: nurse),
-                                  ),
-                                );
-                              },
-                              child: Container(
-                                margin: EdgeInsets.only(
-                                  right: index == nurses.length - 1 ? 0 : 16,
-                                  left: index == 0 ? 16 : 0,
-                                ),
-                                width: 140,
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(16),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.grey.withOpacity(0.2),
-                                      blurRadius: 8,
-                                      spreadRadius: 2,
-                                    ),
-                                  ],
-                                ),
-                                padding: const EdgeInsets.all(12),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Container(
-                                      height: 80,
-                                      width: 80,
-                                      decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color:
-                                                Colors.black.withOpacity(0.1),
-                                            blurRadius: 6,
-                                          ),
-                                        ],
-                                      ),
-                                      child: ClipOval(
-                                        child: Image.network(
-                                          nurse['photo'],
-                                          fit: BoxFit.cover,
-                                          errorBuilder:
-                                              (context, error, stackTrace) {
-                                            return Icon(
-                                              Icons.person,
-                                              size: 40,
-                                              color: Colors.grey[400],
-                                            );
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 10),
-                                    Text(
-                                      nurse['name'],
-                                      textAlign: TextAlign.center,
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 14,
-                                        color: Colors.black87,
-                                      ),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                    const SizedBox(height: 8),
-                                    Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        const Icon(
-                                          Icons.star,
-                                          color: Colors.amber,
-                                          size: 16,
-                                        ),
-                                        const SizedBox(width: 4),
-                                        Text(
-                                          nurse['rating'].toString(),
-                                          style: const TextStyle(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.black87,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    ],
                   );
                 },
               ),
+              // FutureBuilder<List<List<Map<String, dynamic>>>>(
+              //   future: _fetchDoctorsAndNurses,
+              //   builder: (context, snapshot) {
+              //     if (snapshot.connectionState == ConnectionState.waiting) {
+              //       return _buildDoctorShimmerEffect();
+              //     } else if (snapshot.hasError) {
+              //       return const Center(
+              //           child: Text('Failed to load data',
+              //               style: TextStyle(color: Colors.red)));
+              //     } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              //       return const Center(child: Text('No data available'));
+              //     }
+
+              //     final doctors = snapshot.data![0];
+              //     final nurses = snapshot.data![1];
+
+              //     return Column(
+              //       children: [
+              //         SingleChildScrollView(
+              //           scrollDirection: Axis.horizontal,
+              //           child: Row(
+              //             children: doctors.map((doctor) {
+              //               return GestureDetector(
+              //                 onTap: () async {
+              //                   await saveDoctorId(doctor['id']);
+              //                   Navigator.push(
+              //                     context,
+              //                     MaterialPageRoute(
+              //                       builder: (context) =>
+              //                           DoctorDetailsScreen(doctor: doctor),
+              //                     ),
+              //                   );
+              //                 },
+              //                 child: Container(
+              //                   margin: const EdgeInsets.only(right: 16),
+              //                   width: 150,
+              //                   decoration: BoxDecoration(
+              //                     color: Colors.white,
+              //                     borderRadius: BorderRadius.circular(12),
+              //                     boxShadow: [
+              //                       BoxShadow(
+              //                         color: Colors.grey.withOpacity(0.2),
+              //                         blurRadius: 5,
+              //                         spreadRadius: 2,
+              //                       ),
+              //                     ],
+              //                   ),
+              //                   padding: const EdgeInsets.all(12),
+              //                   child: Column(
+              //                     children: [
+              //                       ClipRRect(
+              //                         borderRadius: BorderRadius.circular(12),
+              //                         child: Image.network(
+              //                           doctor['photo'],
+              //                           height: 90,
+              //                           width: 90,
+              //                           fit: BoxFit.cover,
+              //                         ),
+              //                       ),
+              //                       const SizedBox(height: 8),
+              //                       Text(
+              //                         doctor['name'],
+              //                         style: const TextStyle(
+              //                           fontWeight: FontWeight.bold,
+              //                         ),
+              //                       ),
+              //                       const SizedBox(height: 8),
+              //                       Row(
+              //                         children: [
+              //                           const Icon(
+              //                             Icons.star,
+              //                             color: Colors.amber,
+              //                             size: 16,
+              //                           ),
+              //                           const SizedBox(width: 4),
+              //                           Text(
+              //                             doctor['rating'].toString(),
+              //                             style: const TextStyle(
+              //                               color: Colors.grey,
+              //                               fontWeight: FontWeight.bold,
+              //                             ),
+              //                           ),
+              //                         ],
+              //                       ),
+              //                     ],
+              //                   ),
+              //                 ),
+              //               );
+              //             }).toList(),
+              //           ),
+              //         ),
+              //         const SizedBox(height: 32),
+              //         Row(
+              //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //           children: [
+              //             const Text(
+              //               'Top-Rated Nurses',
+              //               style: TextStyle(
+              //                 fontSize: 20,
+              //                 fontWeight: FontWeight.bold,
+              //                 color: Colors.black,
+              //               ),
+              //             ),
+              //             TextButton(
+              //               onPressed: () {
+              //                 Navigator.push(
+              //                   context,
+              //                   MaterialPageRoute(
+              //                     builder: (context) => const NurseListScreen(),
+              //                   ),
+              //                 );
+              //               },
+              //               child: const Text(
+              //                 'See All',
+              //                 style: TextStyle(
+              //                   color: Colors.blue,
+              //                   fontWeight: FontWeight.bold,
+              //                 ),
+              //               ),
+              //             ),
+              //           ],
+              //         ),
+              //         const SizedBox(height: 16),
+              //         SizedBox(
+              //           height: 180,
+              //           child: ListView.builder(
+              //             scrollDirection: Axis.horizontal,
+              //             itemCount: nurses.length,
+              //             itemBuilder: (context, index) {
+              //               final nurse = nurses[index];
+              //               return GestureDetector(
+              //                 onTap: () async {
+              //                   await saveNurseId(nurse['id']);
+              //                   Navigator.push(
+              //                     context,
+              //                     MaterialPageRoute(
+              //                       builder: (context) =>
+              //                           NurseDetailsScreen(nurse: nurse),
+              //                     ),
+              //                   );
+              //                 },
+              //                 child: Container(
+              //                   margin: EdgeInsets.only(
+              //                     right: index == nurses.length - 1 ? 0 : 16,
+              //                     left: index == 0 ? 16 : 0,
+              //                   ),
+              //                   width: 140,
+              //                   decoration: BoxDecoration(
+              //                     color: Colors.white,
+              //                     borderRadius: BorderRadius.circular(16),
+              //                     boxShadow: [
+              //                       BoxShadow(
+              //                         color: Colors.grey.withOpacity(0.2),
+              //                         blurRadius: 8,
+              //                         spreadRadius: 2,
+              //                       ),
+              //                     ],
+              //                   ),
+              //                   padding: const EdgeInsets.all(12),
+              //                   child: Column(
+              //                     crossAxisAlignment: CrossAxisAlignment.center,
+              //                     children: [
+              //                       Container(
+              //                         height: 80,
+              //                         width: 80,
+              //                         decoration: BoxDecoration(
+              //                           shape: BoxShape.circle,
+              //                           boxShadow: [
+              //                             BoxShadow(
+              //                               color:
+              //                                   Colors.black.withOpacity(0.1),
+              //                               blurRadius: 6,
+              //                             ),
+              //                           ],
+              //                         ),
+              //                         child: ClipOval(
+              //                           child: Image.network(
+              //                             nurse['photo'],
+              //                             fit: BoxFit.cover,
+              //                             errorBuilder:
+              //                                 (context, error, stackTrace) {
+              //                               return Icon(
+              //                                 Icons.person,
+              //                                 size: 40,
+              //                                 color: Colors.grey[400],
+              //                               );
+              //                             },
+              //                           ),
+              //                         ),
+              //                       ),
+              //                       const SizedBox(height: 10),
+              //                       Text(
+              //                         nurse['name'],
+              //                         textAlign: TextAlign.center,
+              //                         style: const TextStyle(
+              //                           fontWeight: FontWeight.bold,
+              //                           fontSize: 14,
+              //                           color: Colors.black87,
+              //                         ),
+              //                         maxLines: 1,
+              //                         overflow: TextOverflow.ellipsis,
+              //                       ),
+              //                       const SizedBox(height: 8),
+              //                       Row(
+              //                         crossAxisAlignment:
+              //                             CrossAxisAlignment.center,
+              //                         children: [
+              //                           const Icon(
+              //                             Icons.star,
+              //                             color: Colors.amber,
+              //                             size: 16,
+              //                           ),
+              //                           const SizedBox(width: 4),
+              //                           Text(
+              //                             nurse['rating'].toString(),
+              //                             style: const TextStyle(
+              //                               fontSize: 14,
+              //                               fontWeight: FontWeight.bold,
+              //                               color: Colors.black87,
+              //                             ),
+              //                           ),
+              //                         ],
+              //                       ),
+              //                     ],
+              //                   ),
+              //                 ),
+              //               );
+              //             },
+              //           ),
+              //         ),
+              //       ],
+              //     );
+              //   },
+              // ),
             ],
           ),
         ),
@@ -654,6 +708,66 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildServiceShimmerEffect() {
+    return Shimmer.fromColors(
+      baseColor: Colors.grey[300]!,
+      highlightColor: Colors.grey[100]!,
+      child: ListView.builder(
+        itemCount: 5,
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        padding: EdgeInsets.zero,
+        itemBuilder: (context, index) {
+          return Container(
+            margin: const EdgeInsetsDirectional.only(bottom: 16),
+            padding: const EdgeInsetsDirectional.symmetric(
+                horizontal: 4, vertical: 4),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withValues(alpha: .2),
+                  blurRadius: 5,
+                  spreadRadius: 2,
+                ),
+              ],
+            ),
+            child: ListTile(
+                title: const Text(
+                  "Unnamed Service",
+                  style: TextStyle(
+                      color: Constant.primaryColor,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16),
+                ),
+                subtitle: const Text(
+                  "No description",
+                  style: TextStyle(
+                      color: Constant.hintColor, fontWeight: FontWeight.w400),
+                ),
+                trailing: const Text(
+                  " 123${Constant.currency}",
+                  style: TextStyle(
+                      color: Constant.primaryColor,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16),
+                ),
+                leading: ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Image.network(
+                    'https://th.bing.com/th/id/R.c98045cd667447def428ad9b261c0ef4?rik=y8ioZ%2bsKto28oQ&pid=ImgRaw&r=0',
+                    width: 70,
+                    height: 70,
+                    fit: BoxFit.cover,
+                  ),
+                )),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildServicesShimmer() {
     return Shimmer.fromColors(
       baseColor: Colors.grey[300]!,
       highlightColor: Colors.grey[100]!,
@@ -702,53 +816,52 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
-
-  Widget _buildDoctorShimmerEffect() {
-    return Shimmer.fromColors(
-      baseColor: Colors.grey[300]!,
-      highlightColor: Colors.grey[100]!,
-      child: Row(
-        children: List.generate(
-          3,
-          (index) => Container(
-            margin: const EdgeInsets.only(right: 16),
-            width: 150,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.2),
-                  blurRadius: 5,
-                  spreadRadius: 2,
-                ),
-              ],
-            ),
-            padding: const EdgeInsets.all(12),
-            child: Column(
-              children: [
-                Container(
-                  height: 90,
-                  width: 90,
-                  color: Colors.white,
-                ),
-                const SizedBox(height: 8),
-                Container(
-                  height: 20,
-                  width: double.infinity,
-                  color: Colors.white,
-                ),
-                const SizedBox(height: 8),
-                Container(
-                  height: 20,
-                  width: double.infinity,
-                  color: Colors.white,
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
+  // Widget _buildDoctorShimmerEffect() {
+  //   return Shimmer.fromColors(
+  //     baseColor: Colors.grey[300]!,
+  //     highlightColor: Colors.grey[100]!,
+  //     child: Row(
+  //       children: List.generate(
+  //         3,
+  //         (index) => Container(
+  //           margin: const EdgeInsets.only(right: 16),
+  //           width: 150,
+  //           decoration: BoxDecoration(
+  //             color: Colors.white,
+  //             borderRadius: BorderRadius.circular(12),
+  //             boxShadow: [
+  //               BoxShadow(
+  //                 color: Colors.grey.withOpacity(0.2),
+  //                 blurRadius: 5,
+  //                 spreadRadius: 2,
+  //               ),
+  //             ],
+  //           ),
+  //           padding: const EdgeInsets.all(12),
+  //           child: Column(
+  //             children: [
+  //               Container(
+  //                 height: 90,
+  //                 width: 90,
+  //                 color: Colors.white,
+  //               ),
+  //               const SizedBox(height: 8),
+  //               Container(
+  //                 height: 20,
+  //                 width: double.infinity,
+  //                 color: Colors.white,
+  //               ),
+  //               const SizedBox(height: 8),
+  //               Container(
+  //                 height: 20,
+  //                 width: double.infinity,
+  //                 color: Colors.white,
+  //               ),
+  //             ],
+  //           ),
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
 }

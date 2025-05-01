@@ -1,7 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_sanar_proj/PATIENT/Widgets/Constant_Widgets/custom_AppBar.dart';
+import 'package:flutter_sanar_proj/constant.dart';
+import 'package:flutter_sanar_proj/core/widgets/custom_gradiant_text_widget.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class StaffScheduleSubmited extends StatefulWidget {
@@ -102,35 +105,39 @@ class _StaffScheduleSubmitedState extends State<StaffScheduleSubmited>
             child: Container(
               height: 50,
               margin: const EdgeInsets.symmetric(horizontal: 10),
+              padding: const EdgeInsets.symmetric(vertical: 6),
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Colors.teal, Colors.cyan],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                borderRadius: BorderRadius.circular(12),
+                color: Colors.grey[100],
+                borderRadius: BorderRadius.circular(50),
               ),
               child: TabBar(
                 controller: _tabController,
                 isScrollable: true,
                 labelColor: Colors.white,
-                unselectedLabelColor: Colors.white70,
+                unselectedLabelColor: Colors.black54,
                 labelStyle:
                     const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
                 indicator: BoxDecoration(
-                  color: Colors.teal[300],
-                  borderRadius: BorderRadius.circular(12),
+                  gradient: const LinearGradient(
+                      colors: Constant.gradientPrimaryColors,
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter),
+                  borderRadius: BorderRadius.circular(50),
                 ),
                 tabs: daysOfWeek.map((day) {
                   return Center(child: Text(day));
                 }).toList(),
+                indicatorSize: TabBarIndicatorSize.tab,
+                padding: EdgeInsets.zero,
+                indicatorPadding: EdgeInsets.zero,
+                dividerColor: Colors.transparent,
               ),
             ),
           ),
           isLoading
-              ? Center(
+              ? const Center(
                   child: CircularProgressIndicator(
-                    color: Colors.teal[300],
+                    color: Constant.primaryColor,
                   ),
                 )
               : Expanded(
@@ -154,7 +161,7 @@ class _StaffScheduleSubmitedState extends State<StaffScheduleSubmited>
                                   decoration: BoxDecoration(
                                     color: Colors.white,
                                     borderRadius: BorderRadius.circular(10),
-                                    boxShadow: [
+                                    boxShadow: const [
                                       BoxShadow(
                                         color: Colors.black26,
                                         blurRadius: 8,
@@ -166,14 +173,11 @@ class _StaffScheduleSubmitedState extends State<StaffScheduleSubmited>
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      Text(
-                                        'Time: ${schedule['start_time']} - ${schedule['end_time']}',
-                                        style: TextStyle(
+                                      CustomGradiantTextWidget(
+                                          text:
+                                              'Time: ${schedule['start_time']} - ${schedule['end_time']}',
                                           fontSize: 16,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.teal[600],
-                                        ),
-                                      ),
+                                          fontWeight: FontWeight.bold),
                                       const SizedBox(height: 8),
                                       Text(
                                         'Notes: ${schedule['notes'] ?? 'No notes available'}',

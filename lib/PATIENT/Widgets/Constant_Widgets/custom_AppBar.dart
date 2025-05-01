@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_sanar_proj/core/widgets/custom_gradiant_icon_widget.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final double height;
@@ -29,11 +30,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           Row(
             children: [
               IconButton(
-                icon: const Icon(
-                  Icons.notifications,
-                  size: 30,
-                  color: const Color(0xFF0782BA),
-                ),
+                icon: const CustomGradiantIconWidget(
+                    icon: Icons.notifications, iconSize: 30),
                 onPressed: () {
                   // Handle notification icon press
                 },

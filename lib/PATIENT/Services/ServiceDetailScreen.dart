@@ -1,26 +1,44 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_sanar_proj/PATIENT/Services/doctor_detail_service.dart';
+import 'package:flutter_sanar_proj/PATIENT/Services/nurse_detail_service.dart';
 import 'package:flutter_sanar_proj/constant.dart';
+import 'package:flutter_sanar_proj/core/widgets/custom_button.dart';
+import 'package:flutter_sanar_proj/core/widgets/custom_gradiant_icon_widget.dart';
+import 'package:flutter_sanar_proj/core/widgets/custom_gradiant_text_widget.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../STTAFF/HOSPITAL/ProviderDetailsScreen.dart';
+import '../../core/widgets/custom_netowrk_iamge.dart';
 import 'FilteredListScreen.dart'; // Import the FilteredListScreen
 
-class ServiceDetailScreen extends StatelessWidget {
+class ServiceDetailScreen extends StatefulWidget {
   final int serviceId; // Service ID to fetch details
 
   const ServiceDetailScreen({super.key, required this.serviceId});
 
+  @override
+  State<ServiceDetailScreen> createState() => _ServiceDetailScreenState();
+}
+
+class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
+  List<Map<String, dynamic>> providers =
+      []; // Unified list for doctors and nurses
+  Map<String, dynamic>? serviceData; // Store the entire service data
   Future<Map<String, dynamic>> fetchServiceDetails() async {
     final url = Uri.parse(
-        'http://67.205.166.136/api/services/$serviceId/'); // Adjust the URL as needed
+        'http://67.205.166.136/api/services/${widget.serviceId}/'); // Adjust the URL as needed
     final response =
         await http.get(url, headers: {'accept': 'application/json'});
 
     if (response.statusCode == 200) {
       // Save the service ID in SharedPreferences
-      await saveServiceId(serviceId);
+      await saveServiceId(widget.serviceId);
+      final data = json.decode(response.body);
+      serviceData = data; // Store the entire service data
+      providers = List<Map<String, dynamic>>.from(data['provider_info']);
       return json.decode(utf8.decode(response.bodyBytes)); // Decode with UTF-8
     } else {
       throw Exception('Failed to load service details');
@@ -70,15 +88,31 @@ class ServiceDetailScreen extends StatelessWidget {
               : (serviceDetails['price'] ?? 0.0);
 
           return Scaffold(
+            bottomNavigationBar: Padding(
+              padding: const EdgeInsetsDirectional.symmetric(
+                  horizontal: 20, vertical: 20),
+              child: CustomButtonNew(
+                  title: 'Book Service',
+                  isLoading: false,
+                  isBackgroundPrimary: true,
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => FilteredListScreen(
+                          serviceId: widget.serviceId,
+                          servicePrice: price.toStringAsFixed(2),
+                        ),
+                      ),
+                    );
+                  }),
+            ),
             appBar: AppBar(
-              title: Text(
-                serviceDetails['name_ar'] ??
+              title: CustomGradiantTextWidget(
+                text: serviceDetails['name_ar'] ??
                     serviceDetails['name'] ??
                     'Service Details',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.teal.shade900,
-                ),
+                fontSize: 22,
               ),
               backgroundColor: Colors.white,
               elevation: 0,
@@ -94,9 +128,9 @@ class ServiceDetailScreen extends StatelessWidget {
                   end: Alignment.bottomCenter,
                 ),
               ),
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: SingleChildScrollView(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -106,7 +140,7 @@ class ServiceDetailScreen extends StatelessWidget {
                           borderRadius: BorderRadius.circular(15.0),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.teal.withOpacity(0.2),
+                              color: Constant.primaryColor.withOpacity(0.1),
                               blurRadius: 10,
                               offset: const Offset(0, 5),
                             ),
@@ -114,9 +148,8 @@ class ServiceDetailScreen extends StatelessWidget {
                         ),
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(15.0),
-                          child: Image.network(
-                            serviceDetails['image'] ??
-                                'https://via.placeholder.com/150',
+                          child: CustomNetworkImage(
+                            imageUrl: serviceDetails['image'] ?? '',
                             fit: BoxFit.cover,
                             width: double.infinity,
                             height: 250,
@@ -126,18 +159,15 @@ class ServiceDetailScreen extends StatelessWidget {
                       const SizedBox(height: 20),
 
                       // Service Name with Divider
-                      Text(
-                        serviceDetails['name_ar'] ??
+                      CustomGradiantTextWidget(
+                        text: serviceDetails['name_ar'] ??
                             serviceDetails['name'] ??
                             'Service Name',
-                        style: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.teal.shade900,
-                        ),
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
                       ),
-                      Divider(
-                        color: Colors.teal.shade200,
+                      const Divider(
+                        color: Constant.primaryColor,
                         thickness: 1,
                         height: 20,
                       ),
@@ -148,29 +178,24 @@ class ServiceDetailScreen extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           // Price
-
-                          Text(
-                            "${price.toStringAsFixed(2)} ${Constant.currency}",
-                            style: TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.teal.shade700,
-                            ),
+                          CustomGradiantTextWidget(
+                            text:
+                                "${price.toStringAsFixed(2)} ${Constant.currency}",
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
                           ),
 
                           // Duration
                           Row(
                             children: [
-                              Icon(Icons.timer,
-                                  size: 28, color: Colors.teal.shade800),
+                              const CustomGradiantIconWidget(
+                                  icon: Icons.timer, iconSize: 28),
                               const SizedBox(width: 5),
-                              Text(
-                                "${serviceDetails['duration'] ?? 'N/A'} mins",
-                                style: TextStyle(
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.teal.shade700,
-                                ),
+                              CustomGradiantTextWidget(
+                                text:
+                                    "${serviceDetails['duration'] ?? 'N/A'} mins",
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
                               ),
                             ],
                           ),
@@ -179,15 +204,13 @@ class ServiceDetailScreen extends StatelessWidget {
                       const SizedBox(height: 20),
 
                       // Description Section
-                      Text(
-                        "About the Service",
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.teal.shade900,
-                        ),
+                      const CustomGradiantTextWidget(
+                        text: "About the Service",
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
                       ),
                       const SizedBox(height: 10),
+
                       Text(
                         serviceDetails['description_ar'] ??
                             serviceDetails['description'] ??
@@ -200,37 +223,101 @@ class ServiceDetailScreen extends StatelessWidget {
                         textDirection: TextDirection
                             .rtl, // Set text direction to RTL for Arabic
                       ),
-                      const SizedBox(height: 20),
-
-                      // Book Service Button
-                      Center(
-                        child: ElevatedButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => FilteredListScreen(
-                                  serviceId: serviceId,
-                                  servicePrice: price.toStringAsFixed(2),
-                                ),
-                              ),
-                            );
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.teal,
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 16, horizontal: 32),
+                      const SizedBox(height: 16),
+                      const CustomGradiantTextWidget(
+                        text: "Providers",
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      const SizedBox(height: 10),
+                      ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: providers.length,
+                        itemBuilder: (context, index) {
+                          final provider = providers[index];
+                          return Card(
+                            color: Colors.white,
+                            margin: const EdgeInsets.all(8),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
                             elevation: 5,
-                          ),
-                          child: const Text(
-                            'Book Service',
-                            style: TextStyle(fontSize: 18, color: Colors.white),
-                          ),
-                        ),
+                            child: ListTile(
+                                leading: ClipRRect(
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: CustomNetworkImage(
+                                      imageUrl:
+                                          provider['personal_photo'] ?? '',
+                                      width: 50,
+                                      height: 50,
+                                      fit: BoxFit.cover),
+                                ),
+                                title: CustomGradiantTextWidget(
+                                  text: provider['name'] ?? 'Unknown',
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                subtitle: Text(
+                                  "Type: ${provider['type'] ?? 'N/A'}",
+                                  style: TextStyle(
+                                    color: Colors.grey[600],
+                                  ),
+                                ),
+                                trailing: SizedBox(
+                                  width: 150,
+                                  height: 50,
+                                  child: CustomButtonNew(
+                                    title: "View Profile",
+                                    isLoading: false,
+                                    isBackgroundPrimary: true,
+                                    onPressed: () {
+                                      // Navigate based on the type
+                                      if (provider['type'] == 'nurse') {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                NurseDetailServiceScreen(
+                                              nurse:
+                                                  provider, // Pass the nurse data
+                                            ),
+                                          ),
+                                        );
+                                      } else if (provider['type'] ==
+                                              'hospital' ||
+                                          provider['type'] == 'lab') {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                ProviderDetailsScreen(
+                                              service:
+                                                  serviceData!, // Pass the entire service data
+                                            ),
+                                          ),
+                                        );
+                                      } else {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                DoctorDetailsServiceScreen(
+                                              doctor:
+                                                  provider, // Pass the doctor data
+                                              servicePrice:
+                                                  price.toStringAsFixed(2),
+                                            ),
+                                          ),
+                                        );
+                                      }
+                                    },
+                                  ),
+                                )),
+                          );
+                        },
                       ),
+
+                      // Book Service Button
                     ],
                   ),
                 ),

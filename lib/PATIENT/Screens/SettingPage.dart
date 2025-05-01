@@ -1,11 +1,15 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_sanar_proj/PATIENT/Widgets/Constant_Widgets/custom_AppBar.dart';
 import 'package:flutter_sanar_proj/STTAFF/HOSPITAL/Hospital_user_profile.dart';
 import 'package:flutter_sanar_proj/STTAFF/LAB/lab_user_profile.dart';
+import 'package:flutter_sanar_proj/core/helper/app_helper.dart';
+import 'package:flutter_sanar_proj/core/widgets/custom_gradiant_icon_widget.dart';
+import 'package:flutter_sanar_proj/core/widgets/custom_gradiant_text_widget.dart';
+import 'package:flutter_sanar_proj/core/widgets/custom_netowrk_iamge.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:convert';
-import 'package:fluttertoast/fluttertoast.dart';
 
 class SettingPage extends StatefulWidget {
   const SettingPage({super.key});
@@ -63,16 +67,8 @@ class _SettingPageState extends State<SettingPage> {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('access');
     await prefs.remove('userId');
-
-    Fluttertoast.showToast(
-      msg: "Logged out successfully",
-      toastLength: Toast.LENGTH_SHORT,
-      gravity: ToastGravity.BOTTOM,
-      backgroundColor: Colors.teal,
-      textColor: Colors.white,
-      fontSize: 16.0,
-    );
-
+    AppHelper.successSnackBar(
+        context: context, message: "Logged out successfully");
     Navigator.pushReplacementNamed(context, '/Login_Signup');
   }
 
@@ -119,24 +115,24 @@ class _SettingPageState extends State<SettingPage> {
                 child: Row(
                   children: [
                     const SizedBox(width: 12),
-                    CircleAvatar(
-                      radius: 30,
-                      backgroundImage: userData['profile_image'] != null
-                          ? NetworkImage(userData['profile_image'])
-                          : const AssetImage("assets/user_profile.jpg")
-                              as ImageProvider,
-                    ),
+                    Container(
+                        decoration: const BoxDecoration(shape: BoxShape.circle),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(50),
+                          child: CustomNetworkImage(
+                            imageUrl: userData['profile_image'] ?? '',
+                            height: 60,
+                            width: 60,
+                          ),
+                        )),
                     const SizedBox(width: 12),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          userData['full_name'] ?? 'No Name',
-                          style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.teal),
-                        ),
+                        CustomGradiantTextWidget(
+                            text: userData['full_name'] ?? 'No Name',
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold),
                         const SizedBox(height: 4),
                         Text(
                           userData['email'] ?? 'No Email',
@@ -159,18 +155,15 @@ class _SettingPageState extends State<SettingPage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Row(
+                  const Row(
                     children: [
-                      const Icon(Icons.language, color: Colors.teal),
-                      const SizedBox(width: 10),
-                      const Text(
-                        'Language',
-                        style: TextStyle(
+                      CustomGradiantIconWidget(
+                          icon: Icons.language, iconSize: 24),
+                      SizedBox(width: 10),
+                      CustomGradiantTextWidget(
+                          text: 'Language',
                           fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.teal,
-                        ),
-                      ),
+                          fontWeight: FontWeight.w500),
                     ],
                   ),
                   DropdownButton<String>(
@@ -245,12 +238,19 @@ class _SettingPageState extends State<SettingPage> {
             _buildCard(
               child: ListTile(
                 contentPadding: EdgeInsets.zero,
-                leading: const Icon(Icons.logout, color: Colors.teal),
+                leading: const Icon(Icons.logout, color: Colors.red),
                 title: const Text(
                   'Logout',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                  style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.red),
                 ),
-                trailing: const Icon(Icons.arrow_forward_ios, size: 20),
+                trailing: const Icon(
+                  Icons.arrow_forward_ios,
+                  size: 20,
+                  color: Colors.red,
+                ),
                 onTap: logout,
               ),
             ),
@@ -282,14 +282,8 @@ class _SettingPageState extends State<SettingPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.teal,
-            ),
-          ),
+          CustomGradiantTextWidget(
+              text: title, fontSize: 18, fontWeight: FontWeight.bold),
           const SizedBox(height: 10),
           ...children,
         ],
@@ -304,11 +298,9 @@ class _SettingPageState extends State<SettingPage> {
   }) {
     return ListTile(
       contentPadding: EdgeInsets.zero,
-      leading: Icon(icon, color: Colors.teal),
-      title: Text(
-        title,
-        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-      ),
+      leading: CustomGradiantIconWidget(icon: icon),
+      title: CustomGradiantTextWidget(
+          text: title, fontSize: 16, fontWeight: FontWeight.w500),
       trailing: const Icon(Icons.arrow_forward_ios, size: 20),
       onTap: () {
         Navigator.pushNamed(context, route);

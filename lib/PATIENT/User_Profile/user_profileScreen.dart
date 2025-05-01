@@ -1,8 +1,11 @@
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_sanar_proj/core/widgets/custom_gradiant_icon_widget.dart';
+import 'package:flutter_sanar_proj/core/widgets/custom_gradiant_text_widget.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 
 class UserProfileScreen extends StatefulWidget {
   const UserProfileScreen({super.key});
@@ -171,22 +174,13 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                 : const AssetImage("assets/user_profile.jpg") as ImageProvider,
           ),
           const SizedBox(height: 10),
-          Text(
-            userData['full_name'] ?? "User Name",
-            style: const TextStyle(
+          CustomGradiantTextWidget(
+              text: userData['full_name'] ?? "User Name",
               fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: Colors.teal,
-            ),
-          ),
+              fontWeight: FontWeight.bold),
           const SizedBox(height: 5),
-          Text(
-            userData['email'] ?? "Email not available",
-            style: const TextStyle(
-              fontSize: 14,
-              color: Colors.grey,
-            ),
-          ),
+          CustomGradiantTextWidget(
+              text: userData['email'] ?? "Email not available", fontSize: 14),
         ],
       ),
     );
@@ -270,16 +264,10 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
           children: [
             Row(
               children: [
-                Icon(icon, color: Colors.teal),
+                CustomGradiantIconWidget(icon: icon),
                 const SizedBox(width: 8),
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.teal,
-                  ),
-                ),
+                CustomGradiantTextWidget(
+                    text: title, fontSize: 18, fontWeight: FontWeight.bold),
               ],
             ),
             const SizedBox(height: 10),
@@ -303,14 +291,8 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
               color: Colors.grey,
             ),
           ),
-          Text(
-            value,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: Colors.teal,
-            ),
-          ),
+          CustomGradiantTextWidget(
+              text: value, fontSize: 16, fontWeight: FontWeight.bold),
         ],
       ),
     );

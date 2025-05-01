@@ -2,20 +2,22 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_sanar_proj/PATIENT/Widgets/Constant_Widgets/custom_AppBar.dart';
-import 'package:flutter_sanar_proj/STTAFF/Nurse_Screen/staff_Nurse_addService.dart';
+import 'package:flutter_sanar_proj/STTAFF/Nurse_Screen/staff_nurse_add_service.dart';
 import 'package:flutter_sanar_proj/constant.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
 
-class Staff_Nurse_HomeScreen extends StatefulWidget {
-  const Staff_Nurse_HomeScreen({super.key});
+import '../../core/widgets/custom_gradiant_text_widget.dart';
+
+class StaffNurseHomeScreen extends StatefulWidget {
+  const StaffNurseHomeScreen({super.key});
 
   @override
-  _Staff_Nurse_HomeScreenState createState() => _Staff_Nurse_HomeScreenState();
+  _StaffNurseHomeScreenState createState() => _StaffNurseHomeScreenState();
 }
 
-class _Staff_Nurse_HomeScreenState extends State<Staff_Nurse_HomeScreen> {
+class _StaffNurseHomeScreenState extends State<StaffNurseHomeScreen> {
   Map<String, dynamic>? staffProfile;
   Map<String, dynamic>? userProfile;
   List<Map<String, dynamic>> upcomingAppointments = [];
@@ -183,7 +185,7 @@ class _Staff_Nurse_HomeScreenState extends State<Staff_Nurse_HomeScreen> {
       body: isLoading
           ? const Center(
               child: CircularProgressIndicator(
-                color: Colors.teal,
+                color: Constant.primaryColor,
               ),
             )
           : staffProfile == null
@@ -207,13 +209,11 @@ class _Staff_Nurse_HomeScreenState extends State<Staff_Nurse_HomeScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Text(
-                                    userProfile?['full_name'] ?? 'Loading...',
-                                    style: const TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.teal,
-                                    ),
+                                  CustomGradiantTextWidget(
+                                    text: userProfile?['full_name'] ??
+                                        'Loading...',
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
                                   ),
                                   const SizedBox(height: 10),
                                   Text(
@@ -266,13 +266,13 @@ class _Staff_Nurse_HomeScreenState extends State<Staff_Nurse_HomeScreen> {
                                     const Staff_Nurse_Addservice()),
                           );
                         },
-                        icon: const Icon(Icons.add, color: Colors.black),
+                        icon: const Icon(Icons.add, color: Colors.white),
                         label: const Text(
                           'Add Service',
-                          style: TextStyle(color: Colors.black),
+                          style: TextStyle(color: Colors.white),
                         ),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.teal,
+                          backgroundColor: Constant.primaryColor,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -282,13 +282,10 @@ class _Staff_Nurse_HomeScreenState extends State<Staff_Nurse_HomeScreen> {
                     const SizedBox(height: 20),
                     const Padding(
                       padding: EdgeInsets.symmetric(horizontal: 16.0),
-                      child: Text(
-                        'Upcoming Appointments',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.teal,
-                        ),
+                      child: CustomGradiantTextWidget(
+                        text: 'Upcoming Appointments',
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                     const SizedBox(height: 10),
@@ -308,7 +305,7 @@ class _Staff_Nurse_HomeScreenState extends State<Staff_Nurse_HomeScreen> {
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(10),
                                   side: const BorderSide(
-                                      color: Colors.teal, width: 1),
+                                      color: Constant.primaryColor, width: 1),
                                 ),
                                 child: ListTile(
                                   contentPadding: const EdgeInsets.all(16),
@@ -355,7 +352,7 @@ class _Staff_Nurse_HomeScreenState extends State<Staff_Nurse_HomeScreen> {
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(10),
                                   side: const BorderSide(
-                                      color: Colors.teal, width: 1),
+                                      color: Constant.primaryColor, width: 1),
                                 ),
                                 child: Padding(
                                   padding: const EdgeInsets.all(16),
@@ -418,7 +415,7 @@ class _Staff_Nurse_HomeScreenState extends State<Staff_Nurse_HomeScreen> {
                                                 'Price:  ${serviceDetails['price']} ${Constant.currency}',
                                                 style: const TextStyle(
                                                   fontSize: 14,
-                                                  color: Colors.teal,
+                                                  color: Constant.primaryColor,
                                                   fontWeight: FontWeight.bold,
                                                 ),
                                               ),
@@ -427,7 +424,7 @@ class _Staff_Nurse_HomeScreenState extends State<Staff_Nurse_HomeScreen> {
                                       ),
                                       IconButton(
                                         icon: const Icon(Icons.arrow_forward,
-                                            color: Colors.teal),
+                                            color: Constant.primaryColor),
                                         onPressed: () {
                                           // Navigate to appointment details if needed
                                         },

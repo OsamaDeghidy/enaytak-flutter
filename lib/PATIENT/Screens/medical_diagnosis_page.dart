@@ -1,11 +1,14 @@
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_sanar_proj/PATIENT/Screens/MedicalRecordPage.dart';
 import 'package:flutter_sanar_proj/PATIENT/Screens/diagnosis_detail_screen.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_sanar_proj/PATIENT/Widgets/Constant_Widgets/custom_AppBar.dart';
+import 'package:flutter_sanar_proj/core/widgets/custom_gradiant_icon_widget.dart';
+import 'package:flutter_sanar_proj/core/widgets/custom_gradiant_text_widget.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
-import 'package:flutter_sanar_proj/PATIENT/Widgets/Constant_Widgets/custom_AppBar.dart';
-import 'package:flutter_sanar_proj/PATIENT/Screens/MedicalRecordPage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MedicalDiagnosisPage extends StatefulWidget {
   const MedicalDiagnosisPage({super.key});
@@ -288,28 +291,32 @@ class _MedicalDiagnosisPageState extends State<MedicalDiagnosisPage> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text(
-                          'Medical Profile',
-                          style: TextStyle(
+                        const CustomGradiantTextWidget(
+                            text: 'Medical Profile',
                             fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.teal,
+                            fontWeight: FontWeight.bold),
+                        Container(
+                          height: 50,
+                          width: 50,
+                          decoration: BoxDecoration(
+                            color: Colors.grey.withValues(alpha: .1),
+                            borderRadius: BorderRadius.circular(50),
                           ),
-                        ),
-                        IconButton(
-                          icon: const Icon(
-                            Icons.upload_file,
-                            color: Colors.teal,
-                            size: 30,
+                          child: Center(
+                            child: IconButton(
+                              icon: const CustomGradiantIconWidget(
+                                  icon: Icons.upload_file, iconSize: 30),
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        const MedicalRecordPage(),
+                                  ),
+                                );
+                              },
+                            ),
                           ),
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const MedicalRecordPage(),
-                              ),
-                            );
-                          },
                         ),
                       ],
                     ),

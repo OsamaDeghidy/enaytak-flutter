@@ -1,16 +1,22 @@
 import 'dart:convert';
 import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sanar_proj/PATIENT/Screens/FullScreenImage.dart';
+import 'package:flutter_sanar_proj/constant.dart';
+import 'package:flutter_sanar_proj/core/widgets/custom_gradiant_icon_widget.dart';
+import 'package:flutter_sanar_proj/core/widgets/custom_gradiant_text_widget.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:file_picker/file_picker.dart';
+
+import '../../core/helper/app_helper.dart';
+import '../../core/widgets/custom_button.dart';
 
 class AddDiagnosisScreen extends StatefulWidget {
   final int appointmentId; // Pass the appointment ID
 
-  const AddDiagnosisScreen({Key? key, required this.appointmentId})
-      : super(key: key);
+  const AddDiagnosisScreen({super.key, required this.appointmentId});
 
   @override
   _AddDiagnosisScreenState createState() => _AddDiagnosisScreenState();
@@ -29,7 +35,7 @@ class _AddDiagnosisScreenState extends State<AddDiagnosisScreen> {
   List<dynamic> diagnosesList = []; // List to hold diagnoses
 
   // Static list of file types
-  static const List<Map<String, String>> FILE_TYPES = [
+  static const List<Map<String, String>> fileTypes = [
     {'value': 'xray', 'label': 'X-Ray'},
     {'value': 'analysis', 'label': 'Analysis'},
     {'value': 'prescription', 'label': 'Prescription'},
@@ -66,12 +72,13 @@ class _AddDiagnosisScreenState extends State<AddDiagnosisScreen> {
             serviceId); // Fetch service details to get categoryId
         _fetchMedicalRecordId(patientId); // Fetch medical record ID
       } else {
-        print('Failed to load appointment details: ${response.statusCode}');
-        print('Response body: ${response.body}');
+        debugPrint(
+            'Failed to load appointment details: ${response.statusCode}');
+        debugPrint('Response body: ${response.body}');
         throw Exception('Failed to load appointment details');
       }
     } catch (e) {
-      print('Error in _fetchAppointmentDetails: $e');
+      debugPrint('Error in _fetchAppointmentDetails: $e');
       throw Exception('Error fetching appointment details: $e');
     }
   }
@@ -96,12 +103,12 @@ class _AddDiagnosisScreenState extends State<AddDiagnosisScreen> {
           categoryId = data['category']; // Set the category ID
         });
       } else {
-        print('Failed to load service details: ${response.statusCode}');
-        print('Response body: ${response.body}');
+        debugPrint('Failed to load service details: ${response.statusCode}');
+        debugPrint('Response body: ${response.body}');
         throw Exception('Failed to load service details');
       }
     } catch (e) {
-      print('Error in _fetchServiceDetails: $e');
+      debugPrint('Error in _fetchServiceDetails: $e');
       throw Exception('Error fetching service details: $e');
     }
   }
@@ -111,7 +118,7 @@ class _AddDiagnosisScreenState extends State<AddDiagnosisScreen> {
     try {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('access');
-
+      debugPrint('my token is $token');
       final response = await http.get(
         Uri.parse('http://67.205.166.136/api/medical-records/'),
         headers: {
@@ -127,7 +134,7 @@ class _AddDiagnosisScreenState extends State<AddDiagnosisScreen> {
           (record) => record['user'] == patientId,
           orElse: () => null,
         );
-
+        debugPrint('my medical record id is $record');
         if (record != null) {
           setState(() {
             medicalRecordId = record['id']; // Set the medical record ID
@@ -137,12 +144,12 @@ class _AddDiagnosisScreenState extends State<AddDiagnosisScreen> {
           throw Exception('Medical record not found for the patient');
         }
       } else {
-        print('Failed to load medical records: ${response.statusCode}');
-        print('Response body: ${response.body}');
+        debugPrint('Failed to load medical records: ${response.statusCode}');
+        debugPrint('Response body: ${response.body}');
         throw Exception('Failed to load medical records');
       }
     } catch (e) {
-      print('Error in _fetchMedicalRecordId: $e');
+      debugPrint('Error in _fetchMedicalRecordId: $e');
       throw Exception('Error fetching medical record ID: $e');
     }
   }
@@ -174,11 +181,11 @@ class _AddDiagnosisScreenState extends State<AddDiagnosisScreen> {
               .toList();
         });
       } else {
-        print('Failed to load uploaded files: ${response.statusCode}');
-        print('Response body: ${response.body}');
+        debugPrint('Failed to load uploaded files: ${response.statusCode}');
+        debugPrint('Response body: ${response.body}');
       }
     } catch (e) {
-      print('Error in _loadUploadedFiles: $e');
+      debugPrint('Error in _loadUploadedFiles: $e');
     }
   }
 
@@ -203,12 +210,12 @@ class _AddDiagnosisScreenState extends State<AddDiagnosisScreen> {
           diagnosesList = data['results'];
         });
       } else {
-        print('Failed to load diagnoses: ${response.statusCode}');
-        print('Response body: ${response.body}');
+        debugPrint('Failed to load diagnoses: ${response.statusCode}');
+        debugPrint('Response body: ${response.body}');
         throw Exception('Failed to load diagnoses');
       }
     } catch (e) {
-      print('Error in _fetchDiagnoses: $e');
+      debugPrint('Error in _fetchDiagnoses: $e');
       throw Exception('Error fetching diagnoses: $e');
     }
   }
@@ -220,10 +227,9 @@ class _AddDiagnosisScreenState extends State<AddDiagnosisScreen> {
     if (diagnosisText.isEmpty ||
         selectedFileType == null ||
         _pickedFile == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content: Text("Please fill in all fields and select a file")),
-      );
+      AppHelper.errorSnackBar(
+          context: context,
+          message: "Please fill in all fields and select a file.");
       return;
     }
 
@@ -248,30 +254,26 @@ class _AddDiagnosisScreenState extends State<AddDiagnosisScreen> {
                 _pickedFile!.path); // Add the uploaded file URL to the list
             addedDiagnoses.add(diagnosisText); // Add the diagnosis to the list
           });
-
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-                content: Text("Diagnosis and file uploaded successfully")),
-          );
+          AppHelper.successSnackBar(
+              context: context,
+              message: "Diagnosis and file uploaded successfully");
+          Navigator.pop(context);
           // Clear the text field after successful submission
           diagnosisController.clear();
         } else {
-          print('Error uploading file');
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Error uploading file")),
-          );
+          debugPrint('Error uploading file');
+          AppHelper.errorSnackBar(
+              context: context, message: "Error uploading file");
         }
       } else {
-        print('Error adding diagnosis');
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Error adding diagnosis")),
-        );
+        debugPrint('Error adding diagnosis');
+        AppHelper.errorSnackBar(
+            context: context, message: "Error adding diagnosis");
       }
     } catch (e) {
-      print('Error in _submitDiagnosisAndFile: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Failed to submit: $e")),
-      );
+      debugPrint('Error in _submitDiagnosisAndFile: $e');
+      AppHelper.errorSnackBar(
+          context: context, message: "Failed to submit: $e");
     } finally {
       setState(() {
         _isLoading = false; // Stop loading
@@ -282,14 +284,14 @@ class _AddDiagnosisScreenState extends State<AddDiagnosisScreen> {
   // Function to add diagnosis
   Future<http.Response> _addDiagnosis(String diagnosisText) async {
     try {
-      final String apiUrl = 'http://67.205.166.136/api/diagnoses/';
+      const String apiUrl = 'http://67.205.166.136/api/diagnoses/';
       const String csrfToken =
           'lX0YOPw2ElVkeYlf1B7vKBNUErJBDc5jqRXc23Fzf9qRWa8VM3ivKI6PVDS38qHM';
 
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('access');
       final specificId = prefs.getInt('specificId');
-
+      debugPrint('my medical record id is $medicalRecordId');
       final response = await http.post(
         Uri.parse(apiUrl),
         headers: {
@@ -308,11 +310,11 @@ class _AddDiagnosisScreenState extends State<AddDiagnosisScreen> {
         }),
       );
 
-      print('Diagnosis API Response: ${response.statusCode}');
-      print('Diagnosis API Response Body: ${response.body}');
+      debugPrint('Diagnosis API Response: ${response.statusCode}');
+      debugPrint('Diagnosis API Response Body: ${response.body}');
       return response;
     } catch (e) {
-      print('Error in _addDiagnosis: $e');
+      debugPrint('Error in _addDiagnosis: $e');
       rethrow;
     }
   }
@@ -320,7 +322,7 @@ class _AddDiagnosisScreenState extends State<AddDiagnosisScreen> {
   // Function to upload file using multipart/form-data
   Future<http.Response> _uploadFile(int diagnosisId) async {
     try {
-      final String apiUrl = 'http://67.205.166.136/api/medical-files/';
+      const String apiUrl = 'http://67.205.166.136/api/medical-files/';
       const String csrfToken =
           'lX0YOPw2ElVkeYlf1B7vKBNUErJBDc5jqRXc23Fzf9qRWa8VM3ivKI6PVDS38qHM';
 
@@ -362,12 +364,12 @@ class _AddDiagnosisScreenState extends State<AddDiagnosisScreen> {
       var responseData = await response.stream.bytesToString();
       var statusCode = response.statusCode;
 
-      print('File Upload API Response: $statusCode');
-      print('File Upload API Response Body: $responseData');
+      debugPrint('File Upload API Response: $statusCode');
+      debugPrint('File Upload API Response Body: $responseData');
 
       return http.Response(responseData, statusCode);
     } catch (e) {
-      print('Error in _uploadFile: $e');
+      debugPrint('Error in _uploadFile: $e');
       rethrow;
     }
   }
@@ -375,23 +377,17 @@ class _AddDiagnosisScreenState extends State<AddDiagnosisScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Add Diagnosis'),
-        backgroundColor: Colors.teal.shade700,
+        title:
+            const Text('Add Diagnosis', style: TextStyle(color: Colors.white)),
+        backgroundColor: Constant.primaryColor,
         elevation: 0,
       ),
-      body: Container(
-        width: double.infinity,
-        height: double.infinity,
-        padding: const EdgeInsets.all(16.0),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Colors.teal.shade50, Colors.white],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
-        child: SingleChildScrollView(
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsetsDirectional.symmetric(
+              horizontal: 20, vertical: 20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -410,7 +406,7 @@ class _AddDiagnosisScreenState extends State<AddDiagnosisScreen> {
               DropdownButtonFormField<String>(
                 value: selectedFileType,
                 hint: const Text('Select File Type'),
-                items: FILE_TYPES.map((fileType) {
+                items: fileTypes.map((fileType) {
                   return DropdownMenuItem<String>(
                     value: fileType['value'],
                     child: Text(fileType['label']!),
@@ -428,7 +424,9 @@ class _AddDiagnosisScreenState extends State<AddDiagnosisScreen> {
               const SizedBox(height: 20),
 
               // File Upload Button
-              ElevatedButton(
+              CustomButtonNew(
+                title: 'Upload File',
+                isBackgroundPrimary: true,
                 onPressed: () async {
                   FilePickerResult? result =
                       await FilePicker.platform.pickFiles();
@@ -438,18 +436,30 @@ class _AddDiagnosisScreenState extends State<AddDiagnosisScreen> {
                     });
                   }
                 },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.teal.shade700,
-                  minimumSize: const Size(double.infinity, 50),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: const Text(
-                  'Upload File',
-                  style: TextStyle(color: Colors.white),
-                ),
+                isLoading: false,
               ),
+              // ElevatedButton(
+              //   onPressed: () async {
+              //     FilePickerResult? result =
+              //         await FilePicker.platform.pickFiles();
+              //     if (result != null) {
+              //       setState(() {
+              //         _pickedFile = File(result.files.single.path!);
+              //       });
+              //     }
+              //   },
+              //   style: ElevatedButton.styleFrom(
+              //     backgroundColor: Colors.teal.shade700,
+              //     minimumSize: const Size(double.infinity, 50),
+              //     shape: RoundedRectangleBorder(
+              //       borderRadius: BorderRadius.circular(12),
+              //     ),
+              //   ),
+              //   child: const Text(
+              //     'Upload File',
+              //     style: TextStyle(color: Colors.white),
+              //   ),
+              // ),
               const SizedBox(height: 20),
 
               // Display Selected File Preview
@@ -457,13 +467,17 @@ class _AddDiagnosisScreenState extends State<AddDiagnosisScreen> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Selected file: ${_pickedFile!.path.split('/').last}',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.teal.shade800,
-                      ),
-                    ),
+                    CustomGradiantTextWidget(
+                        text:
+                            'Selected file: ${_pickedFile!.path.split('/').last}',
+                        fontSize: 16),
+                    // Text(
+                    //   ,
+                    //   style: TextStyle(
+                    //     fontSize: 14,
+                    //     color: Colors.teal.shade800,
+                    //   ),
+                    // ),
                     const SizedBox(height: 10),
 
                     // Display Image if the file is an image
@@ -474,7 +488,7 @@ class _AddDiagnosisScreenState extends State<AddDiagnosisScreen> {
                         height: 200,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: Colors.teal.shade700),
+                          border: Border.all(color: Constant.primaryColor),
                         ),
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(12),
@@ -493,39 +507,43 @@ class _AddDiagnosisScreenState extends State<AddDiagnosisScreen> {
                         height: 100,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: Colors.teal.shade700),
+                          border: Border.all(color: Constant.primaryColor),
                         ),
-                        child: Center(
-                          child: Icon(
-                            Icons.insert_drive_file,
-                            size: 50,
-                            color: Colors.teal.shade700,
-                          ),
-                        ),
+                        child: const Center(
+                            child: CustomGradiantIconWidget(
+                          icon: Icons.insert_drive_file,
+                          iconSize: 50,
+                        )),
                       ),
                   ],
                 ),
               const SizedBox(height: 20),
 
               // Submit Button
-              ElevatedButton(
-                onPressed: _isLoading ? null : _submitDiagnosisAndFile,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.teal.shade700,
-                  minimumSize: const Size(double.infinity, 50),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: _isLoading
-                    ? const CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                      )
-                    : const Text(
-                        'Add Diagnosis',
-                        style: TextStyle(color: Colors.white),
-                      ),
+              CustomButtonNew(
+                title: 'Add Diagnosis',
+                isBackgroundPrimary: true,
+                onPressed: _submitDiagnosisAndFile,
+                isLoading: _isLoading,
               ),
+              // ElevatedButton(
+              //   onPressed: _isLoading ? null : _submitDiagnosisAndFile,
+              //   style: ElevatedButton.styleFrom(
+              //     backgroundColor: Colors.teal.shade700,
+              //     minimumSize: const Size(double.infinity, 50),
+              //     shape: RoundedRectangleBorder(
+              //       borderRadius: BorderRadius.circular(12),
+              //     ),
+              //   ),
+              //   child: _isLoading
+              //       ? const CircularProgressIndicator(
+              //           valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+              //         )
+              //       : const Text(
+              //           'Add Diagnosis',
+              //           style: TextStyle(color: Colors.white),
+              //         ),
+              // ),
               const SizedBox(height: 20),
 
               // Display Diagnosis Text and Medical Files
@@ -599,7 +617,7 @@ class _AddDiagnosisScreenState extends State<AddDiagnosisScreen> {
                           const SizedBox(height: 20),
                         ],
                       );
-                    }).toList(),
+                    }),
                   ],
                 ),
             ],

@@ -367,6 +367,7 @@ class _ScheduleNurseScreenState extends State<ScheduleNurseScreen> {
               },
             ),
             const SizedBox(height: 40),
+
             ElevatedButton(
               onPressed: _onBookAppointment,
               style: ElevatedButton.styleFrom(

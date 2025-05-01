@@ -2,20 +2,23 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_sanar_proj/PATIENT/Widgets/Constant_Widgets/custom_AppBar.dart';
-import 'package:flutter_sanar_proj/STTAFF/Nurse_Screen/addNurse_diagnosis.dart';
+import 'package:flutter_sanar_proj/constant.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
-class Staff_Nurse_AppointmentScreen extends StatefulWidget {
-  const Staff_Nurse_AppointmentScreen({super.key});
+import '../../core/widgets/custom_gradiant_text_widget.dart';
+import 'add_nurse_diagnosis.dart';
+
+class StaffNurseAppointmentScreen extends StatefulWidget {
+  const StaffNurseAppointmentScreen({super.key});
 
   @override
-  State<Staff_Nurse_AppointmentScreen> createState() =>
-      _Staff_Nurse_AppointmentScreenState();
+  State<StaffNurseAppointmentScreen> createState() =>
+      _StaffNurseAppointmentScreenState();
 }
 
-class _Staff_Nurse_AppointmentScreenState
-    extends State<Staff_Nurse_AppointmentScreen> {
+class _StaffNurseAppointmentScreenState
+    extends State<StaffNurseAppointmentScreen> {
   List<ListItem> confirmedAppointments = [];
   List<ListItem> refusedAppointments = [];
   bool isLoading = true;
@@ -200,7 +203,7 @@ class _Staff_Nurse_AppointmentScreenState
       body: isLoading
           ? const Center(
               child: CircularProgressIndicator(
-                color: Colors.teal,
+                color: Constant.primaryColor,
               ),
             )
           : Padding(
@@ -277,6 +280,9 @@ class _TabbedListState extends State<TabbedList>
     return Column(
       children: [
         Container(
+          height: 50,
+          margin: const EdgeInsets.symmetric(horizontal: 10),
+          padding: const EdgeInsets.symmetric(vertical: 6),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(50),
@@ -289,7 +295,10 @@ class _TabbedListState extends State<TabbedList>
             labelStyle:
                 const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             indicator: BoxDecoration(
-              color: Colors.teal[600],
+              gradient: const LinearGradient(
+                  colors: Constant.gradientPrimaryColors,
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter),
               borderRadius: BorderRadius.circular(50),
             ),
             tabs: widget.tabs
@@ -350,13 +359,10 @@ class ListContent extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  listItem.title,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.teal,
-                  ),
+                CustomGradiantTextWidget(
+                  text: listItem.title,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
                 ),
                 const SizedBox(height: 8),
                 Text(
@@ -372,7 +378,7 @@ class ListContent extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: Colors.teal,
+                    color: Constant.primaryColor,
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -384,7 +390,7 @@ class ListContent extends StatelessWidget {
                         onAddDiagnosis(listItem.id);
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.teal,
+                        backgroundColor: Constant.primaryColor,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
@@ -432,7 +438,7 @@ class ListContent extends StatelessWidget {
                         );
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.teal,
+                        backgroundColor: Constant.primaryColor,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),

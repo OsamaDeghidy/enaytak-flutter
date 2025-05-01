@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_sanar_proj/PATIENT/Login-Signup/Login-Signup/login_signup.dart';
 import 'package:flutter_sanar_proj/PATIENT/Login-Signup/Login-Signup/personalRegestraion.dart';
@@ -7,9 +8,14 @@ import 'package:flutter_sanar_proj/STTAFF/HOSPITAL/Hospital_bottom_navbar.dart';
 import 'package:flutter_sanar_proj/STTAFF/LAB/Lab_bottom_navbar.dart';
 import 'package:flutter_sanar_proj/STTAFF/Widgets/customDoctor_bottomNAVbar.dart';
 import 'package:flutter_sanar_proj/STTAFF/Widgets/customNurse_bottomNAVbar.dart';
+import 'package:flutter_sanar_proj/core/helper/app_helper.dart';
+import 'package:flutter_sanar_proj/core/widgets/custom_gradiant_icon_widget.dart';
+import 'package:flutter_sanar_proj/core/widgets/custom_gradiant_text_widget.dart';
 import 'package:http/http.dart' as http;
 import 'package:page_transition/page_transition.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../../core/widgets/custom_button.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -22,7 +28,7 @@ class _LoginState extends State<Login> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   bool _obscurePassword = true;
-
+  bool isLoginLoading = false;
   // Define the new color
   final Color newColor = const Color(0xFF52A0AE); // #52A0AE
 
@@ -31,9 +37,8 @@ class _LoginState extends State<Login> {
     final password = passwordController.text;
 
     if (email.isEmpty || password.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please fill in all fields.")),
-      );
+      AppHelper.errorSnackBar(
+          context: context, message: "Please fill in all fields.");
       return;
     }
 
@@ -62,12 +67,8 @@ class _LoginState extends State<Login> {
         await prefs.setInt('specificId', specificId);
         await prefs.setString('user_type', userType);
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text("Login successful!",
-                  style: TextStyle(color: Colors.green))),
-        );
-
+        AppHelper.successSnackBar(
+            context: context, message: "Login successful!");
         if (userType == 'doctor') {
           Navigator.pushReplacement(
             context,
@@ -110,16 +111,14 @@ class _LoginState extends State<Login> {
           );
         }
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Login failed. Check credentials.")),
-        );
-        print(response.body);
-        print(response.statusCode);
+        AppHelper.errorSnackBar(
+            context: context, message: "Login failed. Check credentials.");
+        debugPrint(response.body);
+        debugPrint('response.statusCode ${response.statusCode}');
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("An error occurred. Please try again.")),
-      );
+      AppHelper.errorSnackBar(
+          context: context, message: "An error occurred. Please try again.");
     }
   }
 
@@ -145,9 +144,9 @@ class _LoginState extends State<Login> {
         titleSpacing: 0,
         // automaticallyImplyLeading: false, // Remove or comment this line
         leading: IconButton(
-          icon: Icon(
+          icon: const Icon(
             Icons.arrow_back,
-            color: const Color(0xFF52A0AE), // Use the color #52A0AE
+            color: Color(0xFF52A0AE), // Use the color #52A0AE
           ),
           onPressed: () {
             // Navigate to the LoginSignup screen
@@ -196,7 +195,8 @@ class _LoginState extends State<Login> {
                   controller: emailController,
                   keyboardType: TextInputType.emailAddress,
                   decoration: InputDecoration(
-                    prefixIcon: Icon(Icons.email, color: newColor),
+                    prefixIcon:
+                        const CustomGradiantIconWidget(icon: Icons.email),
                     labelText: "Email",
                     labelStyle: TextStyle(color: newColor),
                     border: OutlineInputBorder(
@@ -212,7 +212,8 @@ class _LoginState extends State<Login> {
                   controller: passwordController,
                   obscureText: _obscurePassword,
                   decoration: InputDecoration(
-                    prefixIcon: Icon(Icons.lock, color: newColor),
+                    prefixIcon:
+                        const CustomGradiantIconWidget(icon: Icons.lock),
                     suffixIcon: IconButton(
                       icon: Icon(
                         _obscurePassword
@@ -242,33 +243,27 @@ class _LoginState extends State<Login> {
                   children: [
                     TextButton(
                       onPressed: navigateToRegistration,
-                      child: Text(
-                        "Sign Up",
-                        style: TextStyle(
-                          color: newColor,
-                          fontSize: 18,
-                        ),
+                      child: const CustomGradiantTextWidget(
+                        text: "Sign Up",
+                        fontSize: 18,
                       ),
                     ),
                   ],
                 ),
                 SizedBox(height: screenHeight * 0.02),
-                SizedBox(
-                  width: screenWidth * 0.5,
-                  height: screenHeight * 0.08,
-                  child: ElevatedButton(
-                    onPressed: handleLogin,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: newColor,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    child: const Text(
-                      "Log In",
-                      style: TextStyle(fontSize: 18, color: Colors.white),
-                    ),
-                  ),
+                CustomButtonNew(
+                  title: 'login',
+                  isBackgroundPrimary: true,
+                  onPressed: () async {
+                    setState(() {
+                      isLoginLoading = true;
+                    });
+                    await handleLogin();
+                    setState(() {
+                      isLoginLoading = false;
+                    });
+                  },
+                  isLoading: isLoginLoading,
                 ),
               ],
             ),

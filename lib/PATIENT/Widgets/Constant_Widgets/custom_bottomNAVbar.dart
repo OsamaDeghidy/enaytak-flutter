@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_sanar_proj/PATIENT/Screens/HomeScreen.dart';
-// import 'package:flutter_sanar_proj/PATIENT/Screens/MedicalDiagnosisPage.dart';
-import 'package:flutter_sanar_proj/PATIENT/Screens/MedicalRecordPage.dart';
 import 'package:flutter_sanar_proj/PATIENT/Screens/SchedulePage.dart';
 import 'package:flutter_sanar_proj/PATIENT/Screens/SettingPage.dart';
+import 'package:flutter_sanar_proj/PATIENT/Screens/medical_diagnosis_page.dart';
+import 'package:flutter_sanar_proj/constant.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -17,10 +17,10 @@ class _MainScreenState extends State<MainScreen> {
 
   // List of screens to navigate between
   final List<Widget> _pages = [
-    HomePage(),
+    const HomePage(),
     const SchedulePage(),
-    MedicalRecordPage(),
-    // const MedicalDiagnosisPage(),
+    // const MedicalRecordPage(),
+    const MedicalDiagnosisPage(),
     const SettingPage(),
   ];
 
@@ -31,7 +31,7 @@ class _MainScreenState extends State<MainScreen> {
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         backgroundColor: Colors.white,
-        selectedItemColor: const Color(0xFF0782BA),
+        selectedItemColor: Constant.primaryColor,
         unselectedItemColor: Colors.grey,
         selectedFontSize: 14,
         unselectedFontSize: 12,
@@ -48,11 +48,11 @@ class _MainScreenState extends State<MainScreen> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.schedule),
-            label: 'Schedule',
+            label: 'Appointment',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.folder),
-            label: 'Medical File',
+            icon: Icon(Icons.health_and_safety),
+            label: 'Medical Diagnosis',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.settings),

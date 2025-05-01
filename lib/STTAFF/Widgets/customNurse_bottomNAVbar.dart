@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_sanar_proj/STTAFF/Nurse_Screen/staff_Nurse_Appointment.dart';
 import 'package:flutter_sanar_proj/STTAFF/Nurse_Screen/staff_Nurse_HomeScreen.dart';
 import 'package:flutter_sanar_proj/STTAFF/Nurse_Screen/staff_Nurse_Profile.dart';
 import 'package:flutter_sanar_proj/STTAFF/Nurse_Screen/staff_Nurse_Requests.dart';
 import 'package:flutter_sanar_proj/STTAFF/Nurse_Screen/staff_Nurse_Schadualing.dart';
+import 'package:flutter_sanar_proj/STTAFF/Nurse_Screen/staff_nurse_appointment.dart';
+import 'package:flutter_sanar_proj/constant.dart';
 
 class StaffNurseMainScreen extends StatefulWidget {
   const StaffNurseMainScreen({super.key});
@@ -17,11 +18,11 @@ class _StaffNurseMainScreenState extends State<StaffNurseMainScreen> {
 
   // List of screens to navigate between
   final List<Widget> _pages = [
-    const Staff_Nurse_HomeScreen(),
-    Staff_Nurse_RequestScreen(),
-    const Staff_Nurse_AppointmentScreen(),
-    const Staff_Nurse_ScheduleScreen(),
-    const Staff_Nurse_ProfileScreen(),
+    const StaffNurseHomeScreen(),
+    const StaffNurseRequestScreen(),
+    const StaffNurseAppointmentScreen(),
+    const StaffNurseScheduleScreen(),
+    const StaffNurseProfileScreen(),
   ];
 
   @override
@@ -31,7 +32,7 @@ class _StaffNurseMainScreenState extends State<StaffNurseMainScreen> {
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         backgroundColor: Colors.white,
-        selectedItemColor: Colors.teal,
+        selectedItemColor: Constant.primaryColor,
         unselectedItemColor: Colors.grey,
         selectedFontSize: 14,
         unselectedFontSize: 12,

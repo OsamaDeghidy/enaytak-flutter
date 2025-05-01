@@ -29,7 +29,16 @@ class AppointmentService {
       "nurse": null,
       "services": [3],
     };
-
+    debugPrint(
+        '📤 Sending Appointment Request: ${jsonEncode(appointmentData)}');
+    debugPrint('📤 URL: http://67.205.166.136/api/appointments/');
+    debugPrint('📤 Headers: ${{
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'X-CSRFTOKEN':
+          'o0Y2YK8sS1VKe1pNcJlrvZ8Gs6Jrf28nnD5xZWtxnDL1EcCnwSnP6XGlTpIoVziW',
+      'Authorization': 'Bearer ${prefs.getString('access')}>',
+    }}');
     try {
       final response = await http.post(
         Uri.parse('http://67.205.166.136/api/appointments/'),
@@ -38,11 +47,11 @@ class AppointmentService {
           'Content-Type': 'application/json',
           'X-CSRFTOKEN':
               'o0Y2YK8sS1VKe1pNcJlrvZ8Gs6Jrf28nnD5xZWtxnDL1EcCnwSnP6XGlTpIoVziW',
-          'Authorization': 'Bearer ${prefs.getString('access')}>',
+          'Authorization': 'Bearer ${prefs.getString('access')}',
         },
         body: json.encode(appointmentData),
       );
-
+      debugPrint('📤 response is :${response.body}');
       if (response.statusCode == 201) {
         onSuccess();
       } else {

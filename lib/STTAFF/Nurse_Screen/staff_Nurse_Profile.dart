@@ -1,20 +1,27 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:image_picker/image_picker.dart';
 
-class Staff_Nurse_ProfileScreen extends StatefulWidget {
-  const Staff_Nurse_ProfileScreen({super.key});
+import 'package:flutter/material.dart';
+import 'package:flutter_sanar_proj/constant.dart';
+import 'package:flutter_sanar_proj/core/widgets/custom_button.dart';
+import 'package:flutter_sanar_proj/core/widgets/custom_gradiant_icon_widget.dart';
+import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../add_bank_account/add_bank_account_view.dart';
+import '../../core/helper/app_helper.dart';
+import '../../core/widgets/custom_gradiant_text_widget.dart';
+
+class StaffNurseProfileScreen extends StatefulWidget {
+  const StaffNurseProfileScreen({super.key});
 
   @override
-  _Staff_Nurse_ProfileScreenState createState() =>
-      _Staff_Nurse_ProfileScreenState();
+  _StaffNurseProfileScreenState createState() =>
+      _StaffNurseProfileScreenState();
 }
 
-class _Staff_Nurse_ProfileScreenState extends State<Staff_Nurse_ProfileScreen> {
+class _StaffNurseProfileScreenState extends State<StaffNurseProfileScreen> {
   Future<Map<String, dynamic>>? staffProfileFuture;
   Future<Map<String, dynamic>>? userProfileFuture;
   String? token;
@@ -53,7 +60,7 @@ class _Staff_Nurse_ProfileScreenState extends State<Staff_Nurse_ProfileScreen> {
         });
       }
     } catch (e) {
-      print('Error initializing profiles: $e');
+      debugPrint('Error initializing profiles: $e');
     }
   }
 
@@ -140,14 +147,9 @@ class _Staff_Nurse_ProfileScreenState extends State<Staff_Nurse_ProfileScreen> {
 
       // Handle the response
       if (response.statusCode == 200) {
-        print("Profile updated successfully");
-        Fluttertoast.showToast(
-          msg: "Profile updated successfully",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          backgroundColor: Colors.teal,
-          textColor: Colors.white,
-        );
+        debugPrint("Profile updated successfully");
+        AppHelper.successSnackBar(
+            context: context, message: 'Profile updated successfully!');
 
         // Refresh the profile data
         setState(() {
@@ -156,24 +158,15 @@ class _Staff_Nurse_ProfileScreenState extends State<Staff_Nurse_ProfileScreen> {
         });
       } else {
         final responseBody = await response.stream.bytesToString();
-        print("Error updating profile: ${response.statusCode} - $responseBody");
-        Fluttertoast.showToast(
-          msg: "Failed to update profile",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
-        );
+        debugPrint(
+            "Error updating profile: ${response.statusCode} - $responseBody");
+        AppHelper.errorSnackBar(
+            context: context, message: 'Failed to update profile');
       }
     } catch (e) {
-      print("Error in updateProfile: $e");
-      Fluttertoast.showToast(
-        msg: "An error occurred",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        backgroundColor: Colors.red,
-        textColor: Colors.white,
-      );
+      debugPrint("Error in updateProfile: $e");
+      AppHelper.errorSnackBar(
+          context: context, message: 'An error occurred. Please try again.');
     }
   }
 
@@ -225,12 +218,10 @@ class _Staff_Nurse_ProfileScreenState extends State<Staff_Nurse_ProfileScreen> {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(15),
               ),
-              title: const Text(
-                "Edit Profile",
-                style: TextStyle(
-                  color: Colors.teal,
-                  fontWeight: FontWeight.bold,
-                ),
+              title: const CustomGradiantTextWidget(
+                text: "Edit Profile",
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
               ),
               content: SingleChildScrollView(
                 child: Column(
@@ -248,7 +239,8 @@ class _Staff_Nurse_ProfileScreenState extends State<Staff_Nurse_ProfileScreen> {
                           },
                           child: CircleAvatar(
                             radius: 80,
-                            backgroundColor: Colors.teal.withOpacity(0.2),
+                            backgroundColor:
+                                Constant.primaryColor.withOpacity(0.2),
                             child: _personalPhotoFile != null
                                 ? ClipOval(
                                     child: Image.file(
@@ -267,11 +259,8 @@ class _Staff_Nurse_ProfileScreenState extends State<Staff_Nurse_ProfileScreen> {
                                           fit: BoxFit.cover,
                                         ),
                                       )
-                                    : Icon(
-                                        Icons.camera_alt,
-                                        size: 60,
-                                        color: Colors.teal,
-                                      ),
+                                    : const CustomGradiantIconWidget(
+                                        icon: Icons.camera_alt, iconSize: 60),
                           ),
                         ),
                         // Edit Icon Overlay
@@ -279,8 +268,8 @@ class _Staff_Nurse_ProfileScreenState extends State<Staff_Nurse_ProfileScreen> {
                           bottom: 0,
                           right: 0,
                           child: Container(
-                            decoration: BoxDecoration(
-                              color: Colors.teal,
+                            decoration: const BoxDecoration(
+                              color: Constant.primaryColor,
                               shape: BoxShape.circle,
                             ),
                             child: IconButton(
@@ -301,83 +290,83 @@ class _Staff_Nurse_ProfileScreenState extends State<Staff_Nurse_ProfileScreen> {
                     // Text Fields
                     TextField(
                       controller: bioController,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         labelText: "Bio",
-                        labelStyle: const TextStyle(color: Colors.teal),
+                        labelStyle: TextStyle(color: Constant.primaryColor),
                         focusedBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: Colors.teal),
+                          borderSide: BorderSide(color: Constant.primaryColor),
                         ),
                       ),
                     ),
                     TextField(
                       controller: certificationsController,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         labelText: "Certifications",
-                        labelStyle: const TextStyle(color: Colors.teal),
+                        labelStyle: TextStyle(color: Constant.primaryColor),
                         focusedBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: Colors.teal),
+                          borderSide: BorderSide(color: Constant.primaryColor),
                         ),
                       ),
                     ),
                     TextField(
                       controller: yearsOfExperienceController,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         labelText: "Years of Experience",
-                        labelStyle: const TextStyle(color: Colors.teal),
+                        labelStyle: TextStyle(color: Constant.primaryColor),
                         focusedBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: Colors.teal),
+                          borderSide: BorderSide(color: Constant.primaryColor),
                         ),
                       ),
                       keyboardType: TextInputType.number,
                     ),
                     TextField(
                       controller: averageRatingController,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         labelText: "Average Rating",
-                        labelStyle: const TextStyle(color: Colors.teal),
+                        labelStyle: TextStyle(color: Constant.primaryColor),
                         focusedBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: Colors.teal),
+                          borderSide: BorderSide(color: Constant.primaryColor),
                         ),
                       ),
                       keyboardType: TextInputType.number,
                     ),
                     TextField(
                       controller: cityController,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         labelText: "City",
-                        labelStyle: const TextStyle(color: Colors.teal),
+                        labelStyle: TextStyle(color: Constant.primaryColor),
                         focusedBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: Colors.teal),
+                          borderSide: BorderSide(color: Constant.primaryColor),
                         ),
                       ),
                     ),
                     TextField(
                       controller: regionController,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         labelText: "Region",
-                        labelStyle: const TextStyle(color: Colors.teal),
+                        labelStyle: TextStyle(color: Constant.primaryColor),
                         focusedBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: Colors.teal),
+                          borderSide: BorderSide(color: Constant.primaryColor),
                         ),
                       ),
                     ),
                     TextField(
                       controller: degreeController,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         labelText: "Degree",
-                        labelStyle: const TextStyle(color: Colors.teal),
+                        labelStyle: TextStyle(color: Constant.primaryColor),
                         focusedBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: Colors.teal),
+                          borderSide: BorderSide(color: Constant.primaryColor),
                         ),
                       ),
                     ),
                     TextField(
                       controller: classificationController,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         labelText: "Classification",
-                        labelStyle: const TextStyle(color: Colors.teal),
+                        labelStyle: TextStyle(color: Constant.primaryColor),
                         focusedBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: Colors.teal),
+                          borderSide: BorderSide(color: Constant.primaryColor),
                         ),
                       ),
                     ),
@@ -395,12 +384,12 @@ class _Staff_Nurse_ProfileScreenState extends State<Staff_Nurse_ProfileScreen> {
                   },
                   child: const Text(
                     "Cancel",
-                    style: TextStyle(color: Colors.teal),
+                    style: TextStyle(color: Constant.primaryColor),
                   ),
                 ),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.teal,
+                    backgroundColor: Constant.primaryColor,
                   ),
                   onPressed: () {
                     // Prepare the updated data
@@ -452,18 +441,13 @@ class _Staff_Nurse_ProfileScreenState extends State<Staff_Nurse_ProfileScreen> {
     await prefs.remove('user_type');
 
     // Show toast message
-    Fluttertoast.showToast(
-      msg: "Logged out successfully",
-      toastLength: Toast.LENGTH_SHORT,
-      gravity: ToastGravity.BOTTOM,
-      backgroundColor: Colors.teal,
-      textColor: Colors.white,
-    );
+    AppHelper.successSnackBar(
+        context: context, message: 'Logged out successfully');
 
     // Navigate to the login/signup screen
     Navigator.pushReplacementNamed(context, '/Login_Signup');
 
-    print("User logged out successfully");
+    debugPrint("User logged out successfully");
   }
 
   @override
@@ -516,12 +500,10 @@ class _Staff_Nurse_ProfileScreenState extends State<Staff_Nurse_ProfileScreen> {
                                   : null,
                             ),
                             const SizedBox(height: 16),
-                            Text(
-                              userData['full_name'] ?? 'No Name',
-                              style: const TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                              ),
+                            CustomGradiantTextWidget(
+                              text: userData['full_name'] ?? 'No Name',
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
                             ),
                             Text(
                               userData['email'] ?? 'No Email',
@@ -604,34 +586,67 @@ class _Staff_Nurse_ProfileScreenState extends State<Staff_Nurse_ProfileScreen> {
                       Center(
                         child: Column(
                           children: [
-                            ElevatedButton.icon(
-                              onPressed: () =>
-                                  _showEditProfileDialog(staffData),
-                              icon: const Icon(Icons.edit),
-                              label: const Text('Edit Profile'),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.teal,
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 32, vertical: 12),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                              ),
+                            CustomButtonNew(
+                              width: 200,
+                              height: 40,
+                              title: 'Add Banck Account',
+                              isLoading: false,
+                              isBackgroundPrimary: true,
+                              onPressed: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        const AddBankAccountView(),
+                                  ),
+                                );
+                              },
                             ),
                             const SizedBox(height: 16),
-                            ElevatedButton.icon(
+                            CustomButtonNew(
+                                width: 200,
+                                height: 40,
+                                title: 'Edit Profile',
+                                isLoading: false,
+                                isBackgroundPrimary: true,
+                                onPressed: () =>
+                                    _showEditProfileDialog(staffData)),
+                            // ElevatedButton.icon(
+                            //   onPressed: () =>
+                            //       _showEditProfileDialog(staffData),
+                            //   icon: const Icon(Icons.edit),
+                            //   label: const Text('Edit Profile'),
+                            //   style: ElevatedButton.styleFrom(
+                            //     backgroundColor: Constant.primaryColor,
+                            //     padding: const EdgeInsets.symmetric(
+                            //         horizontal: 32, vertical: 12),
+                            //     shape: RoundedRectangleBorder(
+                            //       borderRadius: BorderRadius.circular(20),
+                            //     ),
+                            //   ),
+                            // ),
+                            const SizedBox(height: 16),
+                            CustomButtonNew(
+                              width: 200,
+                              height: 40,
+                              title: 'Logout',
+                              isLoading: false,
+                              isBackgroundPrimary: true,
+                              backgroundColor: Constant.redColor,
                               onPressed: handleLogout,
-                              icon: const Icon(Icons.logout),
-                              label: const Text('Logout'),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.red,
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 32, vertical: 12),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                              ),
                             ),
+                            // ElevatedButton.icon(
+                            //   onPressed: handleLogout,
+                            //   icon: const Icon(Icons.logout),
+                            //   label: const Text('Logout'),
+                            //   style: ElevatedButton.styleFrom(
+                            //     backgroundColor: Colors.red,
+                            //     padding: const EdgeInsets.symmetric(
+                            //         horizontal: 32, vertical: 12),
+                            //     shape: RoundedRectangleBorder(
+                            //       borderRadius: BorderRadius.circular(20),
+                            //     ),
+                            //   ),
+                            // ),
                           ],
                         ),
                       ),
@@ -661,15 +676,12 @@ class _Staff_Nurse_ProfileScreenState extends State<Staff_Nurse_ProfileScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              title,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.teal,
-              ),
+            CustomGradiantTextWidget(
+              text: title,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
             ),
-            const Divider(color: Colors.teal),
+            const Divider(color: Constant.primaryColor),
             ...children,
           ],
         ),
@@ -687,12 +699,10 @@ class _Staff_Nurse_ProfileScreenState extends State<Staff_Nurse_ProfileScreen> {
         crossAxisAlignment:
             isAddress ? CrossAxisAlignment.start : CrossAxisAlignment.center,
         children: [
-          Text(
-            label,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-            ),
+          CustomGradiantTextWidget(
+            text: label,
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
           ),
           const SizedBox(width: 8),
           Expanded(
