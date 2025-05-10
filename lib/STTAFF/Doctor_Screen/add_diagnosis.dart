@@ -24,6 +24,7 @@ class AddDiagnosisScreen extends StatefulWidget {
 
 class _AddDiagnosisScreenState extends State<AddDiagnosisScreen> {
   final TextEditingController diagnosisController = TextEditingController();
+  final TextEditingController linkController = TextEditingController();
   String? selectedFileType; // Variable to hold the selected file type
   File? _pickedFile; // Variable to hold the picked file
   int? categoryId; // Variable to hold the category ID from the service
@@ -304,6 +305,7 @@ class _AddDiagnosisScreenState extends State<AddDiagnosisScreen> {
           'diagnosis_text': diagnosisText,
           'appointment': widget.appointmentId,
           'doctor': specificId,
+          'link': linkController.text,
           'medical_record':
               medicalRecordId, // Use the fetched medical record ID
           'category': categoryId, // Use the fetched category ID
@@ -401,6 +403,15 @@ class _AddDiagnosisScreenState extends State<AddDiagnosisScreen> {
                 maxLines: 3,
               ),
               const SizedBox(height: 20),
+              TextField(
+                controller: linkController,
+                decoration: const InputDecoration(
+                  labelText: 'Add Link',
+                  border: OutlineInputBorder(),
+                ),
+                maxLines: 1,
+              ),
+              const SizedBox(height: 12),
 
               // File Type Dropdown
               DropdownButtonFormField<String>(

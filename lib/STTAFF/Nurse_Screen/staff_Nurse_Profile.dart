@@ -10,6 +10,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../add_bank_account/add_bank_account_view.dart';
+import '../../add_bank_account/bank_accounts_view.dart';
 import '../../core/helper/app_helper.dart';
 import '../../core/widgets/custom_gradiant_text_widget.dart';
 
@@ -597,6 +598,22 @@ class _StaffNurseProfileScreenState extends State<StaffNurseProfileScreen> {
                                   MaterialPageRoute(
                                     builder: (context) =>
                                         const AddBankAccountView(),
+                                  ),
+                                );
+                              },
+                            ),
+                            const SizedBox(height: 16),
+                            CustomButtonNew(
+                              width: 200,
+                              height: 40,
+                              title: 'Your Bank Accounts',
+                              isLoading: false,
+                              isBackgroundPrimary: true,
+                              onPressed: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        const BankAccountsView(),
                                   ),
                                 );
                               },

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_sanar_proj/PATIENT/Widgets/Constant_Widgets/custom_AppBar.dart';
 import 'package:flutter_sanar_proj/constant.dart';
+import 'package:flutter_sanar_proj/core/helper/app_helper.dart';
 import 'package:flutter_sanar_proj/core/widgets/custom_button.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -69,7 +70,7 @@ class _StaffAppointmentScreenState extends State<StaffAppointmentScreen> {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('access') ?? '';
     final specificId = prefs.getInt('specificId');
-
+    debugPrint('specificId is $specificId , token is $token');
     final url =
         'http://67.205.166.136/api/doctors/$specificId/appointments/?page=1';
 
@@ -109,6 +110,11 @@ class _StaffAppointmentScreenState extends State<StaffAppointmentScreen> {
             subtitle: formatDateTime(appointment['date_time']),
             trailing: serviceDetails['cost'] ?? 'No Cost',
             notes: appointment['notes'] ?? 'No link provided',
+            serviceType: appointment['service_type'] ?? 'Unknown Service Type',
+            patientId: appointment['patient'] ?? 0,
+            doctorId: appointment['doctor'] ?? 0,
+            nurseId: appointment['nurse'] ?? 0,
+            services: appointment['services'] ?? [],
           );
         }).toList();
 
@@ -124,6 +130,11 @@ class _StaffAppointmentScreenState extends State<StaffAppointmentScreen> {
             subtitle: formatDateTime(appointment['date_time']),
             trailing: serviceDetails['cost'] ?? 'No Cost',
             notes: appointment['notes'] ?? 'No link provided',
+            serviceType: appointment['service_type'] ?? 'Unknown Service Type',
+            patientId: appointment['patient'] ?? 0,
+            doctorId: appointment['doctor'] ?? 0,
+            nurseId: appointment['nurse'] ?? 0,
+            services: appointment['services'] ?? [],
           );
         }).toList();
 
@@ -144,20 +155,27 @@ class _StaffAppointmentScreenState extends State<StaffAppointmentScreen> {
     }
   }
 
-  Future<void> updateAppointmentNote(
-    int appointmentId,
-    String note,
-  ) async {
+  Future<void> updateAppointmentNote({
+    required int appointmentId,
+    required String note,
+    String? serviceType,
+    int? patientId,
+    int? doctorId,
+    int? nurseId,
+    int? labId,
+    int? hospitalId,
+    List<dynamic>? services,
+  }) async {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('access') ?? '';
-    final specificId =
-        prefs.getInt('specificId'); // Assuming this is the patient ID
+    // final specificId =
+    //     prefs.getInt('specificId'); // Assuming this is the patient ID
 
     final url = 'http://67.205.166.136/api/appointments/$appointmentId/';
 
     try {
       debugPrint('note or link is $note');
-      final response = await http.put(
+      final response = await http.patch(
         Uri.parse(url),
         headers: {
           'accept': 'application/json; charset=utf-8',
@@ -168,19 +186,41 @@ class _StaffAppointmentScreenState extends State<StaffAppointmentScreen> {
         },
         body: json.encode({
           "notes": note,
-          "service_type":
-              "teleconsultation", // Replace with a valid service type
-          "patient": specificId, // Replace with a valid patient ID
-          "doctor": '',
-          "nurse": '',
-          "services": [4],
+          if (serviceType != null) "service_type": serviceType,
+          if (patientId != null) "patient": patientId,
+          if (doctorId != null) "doctor": doctorId,
+          "nurse": nurseId == 0 || nurseId == null ? null : nurseId,
+          if (labId != null && labId != 0) "lab": labId,
+          if (hospitalId != null && hospitalId != 0) "hospital": hospitalId,
+          if (services != null) "services": services,
         }),
       );
-
+      debugPrint('Request URL: $url');
+      debugPrint('Request Headers: ${{
+        'accept': 'application/json; charset=utf-8',
+        'Content-Type': 'application/json',
+        'X-CSRFTOKEN':
+            'FTXOrj7A0h4seuYibzZLTxHGGC3ZiNsrDXnP3Rj4N0PoHDBw7o6XMfzBmZLAGfkf',
+        'Authorization': 'Bearer $token',
+      }}');
+      debugPrint('Request Body: ${json.encode({
+            "notes": note,
+            if (serviceType != null) "service_type": serviceType,
+            if (patientId != null) "patient": patientId,
+            if (doctorId != null) "doctor": doctorId,
+            "nurse": nurseId == 0 || nurseId == null ? null : nurseId,
+            if (labId != null && labId != 0) "lab": labId,
+            if (hospitalId != null && hospitalId != 0) "hospital": hospitalId,
+            if (services != null) "services": services,
+          })}');
       if (response.statusCode == 200 || response.statusCode == 204) {
         debugPrint('link updated successfully');
+        AppHelper.successSnackBar(
+            context: context, message: 'Link updated successfully');
         fetchAppointments(); // Refresh data
       } else {
+        AppHelper.errorSnackBar(
+            context: context, message: 'Error updating link');
         debugPrint(
             'Error updating link: ${response.statusCode} - ${response.body}');
       }
@@ -224,7 +264,29 @@ class _StaffAppointmentScreenState extends State<StaffAppointmentScreen> {
                           items: refusedAppointments,
                         ),
                       ],
-                      onSaveNote: updateAppointmentNote,
+                      onSaveNote: ({
+                        required int appointmentId,
+                        required String note,
+                        String? serviceType,
+                        int? patientId,
+                        int? doctorId,
+                        int? nurseId,
+                        int? labId,
+                        int? hospitalId,
+                        List<dynamic>? services,
+                      }) {
+                        updateAppointmentNote(
+                          appointmentId: appointmentId,
+                          note: note,
+                          serviceType: serviceType,
+                          patientId: patientId,
+                          doctorId: doctorId,
+                          nurseId: nurseId,
+                          labId: labId,
+                          hospitalId: hospitalId,
+                          services: services,
+                        );
+                      },
                       onAddDiagnosis: (int appointmentId) {
                         Navigator.push(
                           context,
@@ -245,7 +307,17 @@ class _StaffAppointmentScreenState extends State<StaffAppointmentScreen> {
 
 class TabbedList extends StatefulWidget {
   final List<TabData> tabs;
-  final Function(int, String) onSaveNote;
+  final Function({
+    required int appointmentId,
+    required String note,
+    String? serviceType,
+    int? patientId,
+    int? doctorId,
+    int? nurseId,
+    int? labId,
+    int? hospitalId,
+    List<dynamic>? services,
+  }) onSaveNote;
   final Function(int) onAddDiagnosis;
 
   const TabbedList({
@@ -330,7 +402,17 @@ class _TabbedListState extends State<TabbedList>
 
 class ListContent extends StatelessWidget {
   final List<ListItem> items;
-  final Function(int, String) onSaveNote;
+  final Function({
+    required int appointmentId,
+    required String note,
+    String? serviceType,
+    int? patientId,
+    int? doctorId,
+    int? nurseId,
+    int? labId,
+    int? hospitalId,
+    List<dynamic>? services,
+  }) onSaveNote;
   final Function(int) onAddDiagnosis;
 
   const ListContent({
@@ -437,7 +519,16 @@ class ListContent extends StatelessWidget {
                                 TextButton(
                                   onPressed: () {
                                     onSaveNote(
-                                        listItem.id, notesController.text);
+                                      appointmentId: listItem.id,
+                                      note: notesController.text,
+                                      serviceType: listItem.serviceType,
+                                      patientId: listItem.patientId,
+                                      doctorId: listItem.doctorId,
+                                      nurseId: listItem.nurseId,
+                                      labId: listItem.labId,
+                                      hospitalId: listItem.hospitalId,
+                                      services: listItem.services,
+                                    );
                                     Navigator.pop(context);
                                   },
                                   child: const Text('Save'),
@@ -466,6 +557,13 @@ class ListItem {
   final String subtitle;
   final String trailing;
   final String notes;
+  final String? serviceType;
+  final int? patientId;
+  final int? doctorId;
+  final int? nurseId;
+  final int? labId;
+  final int? hospitalId;
+  final List<dynamic>? services;
 
   ListItem({
     required this.id,
@@ -473,6 +571,13 @@ class ListItem {
     required this.subtitle,
     required this.trailing,
     required this.notes,
+    this.serviceType,
+    this.patientId,
+    this.doctorId,
+    this.nurseId,
+    this.labId,
+    this.hospitalId,
+    this.services,
   });
 }
 

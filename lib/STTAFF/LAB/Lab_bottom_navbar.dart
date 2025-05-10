@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_sanar_proj/PATIENT/Screens/HomeScreen.dart';
 import 'package:flutter_sanar_proj/PATIENT/Screens/SettingPage.dart';
 import 'package:flutter_sanar_proj/STTAFF/LAB/LabAppointmentScreen.dart';
+
+import 'lab_home_screen.dart';
 
 class LabMainScreen extends StatefulWidget {
   const LabMainScreen({super.key});
@@ -15,7 +16,7 @@ class _LabMainScreenState extends State<LabMainScreen> {
 
   // List of screens to navigate between
   final List<Widget> _pages = [
-    HomePage(),
+    const LabHomeScreen(),
     const LabAppointmentPage(),
     const SettingPage(),
   ];

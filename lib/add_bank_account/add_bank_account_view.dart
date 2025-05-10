@@ -40,6 +40,7 @@ class _AddBankAccountViewState extends State<AddBankAccountView> {
     final prefs = await SharedPreferences.getInstance();
     userId = prefs.getInt('userId');
     token = prefs.getString('access');
+    debugPrint('userId: $userId');
   }
 
   void _submitForm() async {

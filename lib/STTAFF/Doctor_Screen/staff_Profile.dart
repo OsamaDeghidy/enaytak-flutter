@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_sanar_proj/add_bank_account/bank_accounts_view.dart';
 import 'package:flutter_sanar_proj/constant.dart';
 import 'package:flutter_sanar_proj/core/widgets/custom_button.dart';
 import 'package:flutter_sanar_proj/core/widgets/custom_gradiant_icon_widget.dart';
@@ -603,6 +604,22 @@ class _StaffProfileScreenState extends State<StaffProfileScreen> {
                                   MaterialPageRoute(
                                     builder: (context) =>
                                         const AddBankAccountView(),
+                                  ),
+                                );
+                              },
+                            ),
+                            const SizedBox(height: 16),
+                            CustomButtonNew(
+                              width: 200,
+                              height: 40,
+                              title: 'Your Bank Accounts',
+                              isLoading: false,
+                              isBackgroundPrimary: true,
+                              onPressed: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        const BankAccountsView(),
                                   ),
                                 );
                               },

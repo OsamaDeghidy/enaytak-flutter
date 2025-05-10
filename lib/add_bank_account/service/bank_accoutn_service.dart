@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_sanar_proj/add_bank_account/modules/all_bank_accounts_response.dart';
 import 'package:flutter_sanar_proj/core/helper/app_helper.dart';
 import 'package:http/http.dart' as http;
 
@@ -50,6 +51,36 @@ class ApiServiceForBankAccount {
         AppHelper.errorSnackBar(
             context: context, message: 'Failed to add account: $decodedBody');
         throw Exception('Failed to load services');
+      }
+    } catch (error) {
+      debugPrint('❌ Error in API call: $error');
+      throw Exception('Error: $error');
+    }
+  }
+
+  static Future<List<BankAccount>> getBankAccounts({
+    required String userId,
+    required String token,
+  }) async {
+    try {
+      final response = await http.get(
+        Uri.parse('${baseUrl}bank-accounts/user/$userId'),
+        headers: {
+          'accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      final decodedBody = utf8.decode(response.bodyBytes);
+
+      if (response.statusCode == 200) {
+        debugPrint('✅ Response: $decodedBody');
+        final List<dynamic> data = json.decode(decodedBody);
+        return BankAccount.fromJsonList(data);
+      } else {
+        debugPrint('❌ Status Code: ${response.statusCode}');
+        debugPrint('❌ Response Body: $decodedBody');
+        throw Exception('Failed to load bank accounts');
       }
     } catch (error) {
       debugPrint('❌ Error in API call: $error');
